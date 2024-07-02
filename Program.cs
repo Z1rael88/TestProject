@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.OpenApi.Models;
 using WebApplication1.Interfaces;
 using WebApplication1.Middlewares;
+using WebApplication1.ModelBinders;
+using WebApplication1.Models;
 using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +16,10 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.ModelBinderProviders.Insert(0, new ProjectQueryParamsBinder());
+});
 
 builder.Services.AddLogging();
 

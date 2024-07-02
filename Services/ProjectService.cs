@@ -17,13 +17,11 @@ public class ProjectService : IProjectService
        var allProjects= projects.ToList();
        return allProjects;
     }
-
     public Project GetById(int id)
     {
         var project = projects.FirstOrDefault(p => p.Id == id);
         return project;
     }
-
     public Project Create(ProjectDto projectDto)
     {
         var newProject = new Project
@@ -36,7 +34,6 @@ public class ProjectService : IProjectService
         projects.Add(newProject);
         return newProject;
     }
-
     public int Delete(int id)
     {
         var projectToDelete = projects.FirstOrDefault(p => p.Id == id);
@@ -46,7 +43,6 @@ public class ProjectService : IProjectService
         }
         return id;
     }
-
     public Project Update(int id, ProjectDto projectDto)
     {
         var projectToUpdate = projects.FirstOrDefault(p => p.Id == id);

@@ -7,7 +7,7 @@ public interface IProjectService
 {
     public List<Project> GetAll();
     public Project GetById(int id);
-    public Project Create(Project project);
+    public Project Create(ProjectDto projectDto);
     public int Delete(int id);
-    public Project Update(int id, Project project);
+    public Project Update(int id, ProjectDto projectDto);
 }

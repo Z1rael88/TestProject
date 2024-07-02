@@ -3,14 +3,15 @@ using WebApplication1.Models;
 using WebApplication1.Services;
 using System;
 using System.Collections.Generic;
+using WebApplication1.Interfaces;
 
 namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectController(ProjectService projectService) : ControllerBase
+    public class ProjectController(IProjectService projectService) : ControllerBase
     {
-        private readonly ProjectService _projectService = projectService ?? throw new ArgumentNullException(nameof(projectService));
+        private readonly IProjectService _projectService = projectService ?? throw new ArgumentNullException(nameof(projectService));
 
         [HttpGet]
         public List<Project> GetAll()
@@ -25,15 +26,15 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public Project CreateProject(Project project)
+        public Project CreateProject(ProjectDto projectDto)
         {
-            return _projectService.Create(project);
+            return _projectService.Create(projectDto);
         }
 
         [HttpPut("{id}")]
-        public Project UpdateProject(int id, Project project)
+        public Project UpdateProject(int id, ProjectDto projectDto)
         {
-            return _projectService.Update(id, project);
+            return _projectService.Update(id, projectDto);
         }
 
         [HttpDelete("{id}")]

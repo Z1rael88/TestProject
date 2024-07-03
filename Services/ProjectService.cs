@@ -35,6 +35,13 @@ public class ProjectService(IMockProjectRepository mockProjectRepository) : IPro
         var entity= mockProjectRepository.Update(id, projectRequest.ProjectRequestToTaskModel());
         return entity?.ProjectToResponse();
     }
+
+    public List<ProjectResponse> Search(string searchTerm, string descriptionTerm)
+    {
+        var entities= mockProjectRepository.Search(searchTerm, descriptionTerm);
+        return entities.Select(entity => entity.ProjectToResponse()).ToList();
+    }
+
     public bool Delete(Guid id)
     {
         return mockProjectRepository.Delete(id);

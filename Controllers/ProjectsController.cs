@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Dto;
 using WebApplication1.Dtos.ProjectDtos;
 using WebApplication1.Interfaces;
+using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
+using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
@@ -12,7 +14,7 @@ namespace WebApplication1.Controllers
     {
         private readonly IProjectService _projectService = projectService ?? throw new ArgumentNullException(nameof(projectService));
         [HttpGet]
-        public async Task<List<ProjectResponse>> GetAll()
+        public List<ProjectResponse> GetAll()
         {
             return _projectService.GetAll();
         }
@@ -39,6 +41,12 @@ namespace WebApplication1.Controllers
         public bool DeleteProject(Guid id)
         {
             return _projectService.Delete(id);
+        }
+
+        [HttpGet("search")]
+        public List<ProjectResponse> SearchProjects([FromQuery] string searchTerm, [FromQuery] string descriptionTerm)
+        {
+            return _projectService.Search(searchTerm, descriptionTerm);
         }
     }
 }

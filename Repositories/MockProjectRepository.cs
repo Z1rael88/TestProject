@@ -1,8 +1,5 @@
-using WebApplication1.Dto;
-using WebApplication1.Dtos.ProjectDtos;
+using WebApplication1.Exceptions;
 using WebApplication1.Interfaces.ProjectRepositories;
-using WebApplication1.Interfaces.TaskRepositories;
-using WebApplication1.Mappers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Repositories;
@@ -11,8 +8,8 @@ public class MockProjectRepository() : IMockProjectRepository
 {
     private static List<ProjectModel> _projects =
     [
-        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = null },
-        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = null }
+        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = [] },
+        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = [] }
     ];
 
     public List<ProjectModel> GetAll()
@@ -44,6 +41,29 @@ public class MockProjectRepository() : IMockProjectRepository
         existingEntity.Name = entity.Name;
         existingEntity.Description = entity.Description;
         return existingEntity;
+    }
+
+    public List<ProjectModel> Search(string searchTerm, string descriptionTerm)
+    {
+        var filteredProjects = _projects.ToList();
+        
+        if (!string.IsNullOrEmpty(searchTerm) || !string.IsNullOrEmpty(descriptionTerm))
+        {
+           filteredProjects = filteredProjects
+                .Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(descriptionTerm))
+        {
+            filteredProjects = filteredProjects
+                .Where(p => p.Name.Contains(descriptionTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (filteredProjects.Count == 0)
+        {
+            throw new NotFoundException("No projects found matching the search criteria.");
+        }
+        return filteredProjects;
     }
 
     public bool Delete(Guid id)

@@ -1,9 +1,12 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using WebApplication1.Interfaces;
+using WebApplication1.Interfaces.ProjectRepositories;
+using WebApplication1.Interfaces.TaskRepositories;
 using WebApplication1.Middlewares;
 using WebApplication1.ModelBinders;
-using WebApplication1.Models;
+using WebApplication1.Repositories;
 using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +19,18 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IMockTaskRepository, MockTaskRepository>();
+builder.Services.AddScoped<IMockProjectRepository,MockProjectRepository>();
 builder.Services.AddControllers(options =>
-{
-    options.ModelBinderProviders.Insert(0, new ProjectQueryParamsBinder());
-});
-
+    {
+        options.ModelBinderProviders.Insert(0, new ProjectQueryParamsBinder());
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddLogging();
 
 var app = builder.Build();

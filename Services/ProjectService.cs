@@ -1,54 +1,43 @@
-using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Dto;
+using WebApplication1.Dtos.ProjectDtos;
 using WebApplication1.Interfaces;
+using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Mappers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Services;
 
-public class ProjectService : IProjectService
+public class ProjectService(IMockProjectRepository mockProjectRepository) : IProjectService
 {
-   static List<Project> projects = new List<Project>
+    public List<ProjectResponse> GetAll()
     {
-        new Project { Id = 1, Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now },
-        new Project { Id = 2, Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now }
-    };
-    public List<Project> GetAll()
-    {
-       var allProjects= projects.ToList();
-       return allProjects;
+        var entities = mockProjectRepository.GetAll().Select(p=>p.ProjectToResponse());
+        return entities.ToList();
     }
-    public Project GetById(int id)
+    public ProjectResponse? GetById(Guid id)
     {
-        var project = projects.FirstOrDefault(p => p.Id == id);
-        return project;
+        var entity =  mockProjectRepository.GetById(id);
+        return entity?.ProjectToResponse();
     }
-    public Project Create(ProjectDto projectDto)
+    public ProjectResponse Create(ProjectRequest projectRequest)
     {
-        var newProject = new Project
+        var entity = new ProjectModel
         {
-            Id = projects.Any() ? projects.Max(p => p.Id) + 1 : 1, 
-            StartDate = DateTime.Now,
-            Name = projectDto.Name,
-            Description = projectDto.Description
+            Description = projectRequest.Description,
+            Name = projectRequest.Name,
+            StartDate = projectRequest.StartDate,
         };
-        projects.Add(newProject);
-        return newProject;
+        var createdEntity = mockProjectRepository.Create(entity);
+        return createdEntity.ProjectToResponse();
     }
-    public int Delete(int id)
+    public ProjectResponse? Update(Guid id, ProjectRequest projectRequest)
     {
-        var projectToDelete = projects.FirstOrDefault(p => p.Id == id);
-        if (projectToDelete != null)
-        {
-            projects.Remove(projectToDelete);  
-        }
-        return id;
+        var entity= mockProjectRepository.Update(id, projectRequest.ProjectRequestToTaskModel());
+        return entity?.ProjectToResponse();
     }
-    public Project Update(int id, ProjectDto projectDto)
+    public bool Delete(Guid id)
     {
-        var projectToUpdate = projects.FirstOrDefault(p => p.Id == id);
-        projectToUpdate.Name = projectDto.Name;
-        projectToUpdate.Description = projectDto.Description;
-        return projectToUpdate;
+        return mockProjectRepository.Delete(id);
     }
 }
     

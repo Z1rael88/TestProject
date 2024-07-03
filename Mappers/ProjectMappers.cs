@@ -1,15 +1,39 @@
+using WebApplication1.Dto;
+using WebApplication1.Dtos.ProjectDtos;
 using WebApplication1.Models;
 
 namespace WebApplication1.Mappers;
 
 public static class ProjectMappers
 {
-    public static ProjectDto ProjectToDto(this Project project)
+    public static ProjectResponse ProjectToResponse(this ProjectModel projectModel)
     {
-        return new ProjectDto
+        return new ProjectResponse
         {
-            Name = project.Name,
-            Description = project.Description
+            Id = projectModel.Id,
+            Name = projectModel.Name,
+            Description = projectModel.Description,
+            StartDate = projectModel.StartDate,
+            
         };
     }
+    public static ProjectRequest ProjectToRequest(this ProjectModel projectModel)
+    {
+        return new ProjectRequest
+        {
+            Name = projectModel.Name,
+            Description = projectModel.Description,
+            StartDate = projectModel.StartDate
+        };
+    }
+    public static ProjectModel ProjectRequestToTaskModel(this ProjectRequest request)
+    {
+        return new ProjectModel
+        {
+            Name = request.Name,
+            Description = request.Description,
+            StartDate = request.StartDate,
+        };
+    }
+  
 }

@@ -9,7 +9,7 @@ namespace WebApplication1.Repositories;
 
 public class MockProjectRepository() : IMockProjectRepository
 {
-    private static  List<ProjectModel> _projects =
+    private static List<ProjectModel> _projects =
     [
         new ProjectModel { Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = null },
         new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = null }
@@ -50,6 +50,7 @@ public class MockProjectRepository() : IMockProjectRepository
     {
         var entity = _projects.FirstOrDefault(p => p.Id == id);
         if (entity == null) return false;
+        //entity.Tasks.Add();
         _projects.Remove(entity);
         return true;
     }

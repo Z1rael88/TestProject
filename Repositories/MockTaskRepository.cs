@@ -42,7 +42,7 @@ public class MockTaskRepository() : IMockTaskRepository
         existingEntity.Title = entity.Title;
         existingEntity.Description = entity.Description;
         existingEntity.Status = entity.Status;
-        existingEntity.ProjectId = entity.ProjectId;
+        existingEntity.ProjectId= entity.ProjectId;
         return existingEntity;
     }
     public bool Delete(Guid id)

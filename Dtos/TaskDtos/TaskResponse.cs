@@ -14,5 +14,8 @@ public record TaskResponse
     [MaxLength(50)]
     public string Description { get; set; } = String.Empty;
     [Required]
+    
     public Status Status { get; set; }
+
+    public Guid ProjectId { get; set; }
 }

@@ -1,13 +1,14 @@
 using WebApplication1.Dto;
 using WebApplication1.Dtos.TaskDtos;
 using WebApplication1.Interfaces;
+using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
 using WebApplication1.Mappers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Services;
 
-public class TaskService(IProjectService projectService, IMockTaskRepository mockTaskRepository) : ITaskService
+public class TaskService(IProjectService projectService, IMockTaskRepository mockTaskRepository, IMockProjectRepository mockProjectRepository) : ITaskService
 {
     public List<TaskResponse?> GetAll()
     {
@@ -30,9 +31,8 @@ public class TaskService(IProjectService projectService, IMockTaskRepository moc
             Title = taskRequest.Title,
             Description = taskRequest.Description,
             Status = taskRequest.Status,
-            ProjectId = projectId 
+            ProjectId = projectId
         };
-        project.Tasks.Add(taskEntity.TaskToResponse());
         var createdTask = mockTaskRepository.Create(taskEntity);
         return createdTask.TaskToResponse();
     }

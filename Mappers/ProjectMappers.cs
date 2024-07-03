@@ -14,7 +14,7 @@ public static class ProjectMappers
             Name = projectModel.Name,
             Description = projectModel.Description,
             StartDate = projectModel.StartDate,
-            
+            Tasks = projectModel.Tasks.Select(t=>t.TaskToResponse())
         };
     }
     public static ProjectRequest ProjectToRequest(this ProjectModel projectModel)

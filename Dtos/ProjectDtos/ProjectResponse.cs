@@ -15,6 +15,6 @@ public record ProjectResponse
     [Required]
     public DateTime StartDate { get; set; }
 
-    public List<TaskResponse> Tasks { get; set; } = new List<TaskResponse>();
+    public IEnumerable<TaskResponse> Tasks { get; set; } 
 
 }

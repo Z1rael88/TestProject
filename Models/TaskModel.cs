@@ -13,9 +13,8 @@ public record TaskModel : BaseModel
     [MaxLength(25)]
     public string Description { get; set; } = String.Empty;
     [Required]
-    [JsonConverter(typeof(StringEnumConverter))]
     public Status Status { get; set; }
-    public Guid ProjectId { get; set; }//TODO:PROJECT BY IT SELF
+    public Guid ProjectId { get; set; }
 }
 
 public enum Status

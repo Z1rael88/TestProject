@@ -13,7 +13,8 @@ public static class TaskMappers
             Id = task.Id,
             Title = task.Title,
             Description = task.Description,
-            Status = task.Status
+            Status = task.Status,
+            ProjectId = task.ProjectId
         };
     }
     public static TaskRequest TaskToRequest(this TaskModel task)

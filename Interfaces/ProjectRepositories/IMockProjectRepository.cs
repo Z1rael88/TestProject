@@ -9,6 +9,7 @@ public interface IMockProjectRepository
     List<ProjectModel> GetAll();
     ProjectModel? GetById(Guid id);
     ProjectModel Create(ProjectModel entity);
-    ProjectModel?  Update(Guid id, ProjectModel  entity);
+    ProjectModel? Update(Guid id, ProjectModel  entity);
+    
     bool Delete(Guid id);
 }

@@ -1,44 +1,49 @@
-using WebApplication1.Dtos;
+using WebApplication1.Dtos.SearchParams;
 using WebApplication1.Exceptions;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Models;
 
 namespace WebApplication1.Repositories;
 
-public class ProjectRepository() : IProjectRepository
+public class ProjectRepository : IProjectRepository
 {
-    private static List<ProjectModel> _projects =
+    private static ICollection<ProjectModel> _projects =
     [
-        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = [] },
-        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = [] }
+        new ProjectModel
+        {
+            Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = []
+        },
+        new ProjectModel
+        {
+            Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = []
+        }
     ];
 
-    public async Task<IEnumerable<ProjectModel>> GetAllAsync(SearchDto searchDto)
+    public async Task<IEnumerable<ProjectModel>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
-        var allProjects = await Task.Run(() => _projects.ToList());
-        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
+        return await Task.Run(() =>
         {
-            allProjects = allProjects
-                .Where(p => p.Name.Contains(searchDto.SearchTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
-        if (!string.IsNullOrEmpty(searchDto.DescriptionTerm))
-        {
-            allProjects = allProjects
-                .Where(p => p.Name.Contains(searchDto.DescriptionTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
-        if (allProjects.Count == 0)
-        {
-            throw new NotFoundException();
-        }
-        return allProjects;
+            var allProjects = _projects.AsQueryable();
+            if (!string.IsNullOrEmpty(projectSearchParams.NameTerm))
+            {
+                allProjects = allProjects
+                    .Where(p => p.Name.Contains(projectSearchParams.NameTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(projectSearchParams.DescriptionTerm))
+            {
+                allProjects = allProjects
+                    .Where(p => p.Description.Contains(projectSearchParams.DescriptionTerm,
+                        StringComparison.OrdinalIgnoreCase));
+            }
+
+            return allProjects;
+        });
     }
 
     public async Task<ProjectModel?> GetByIdAsync(Guid id)
     {
-        var project = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
-        return project ?? throw new NotFoundException();
+        return await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id));
     }
 
     public async Task<ProjectModel> CreateAsync(ProjectModel entity)
@@ -47,7 +52,8 @@ public class ProjectRepository() : IProjectRepository
         {
             entity.Id = Guid.NewGuid();
         }
-        _projects.Add(entity);
+
+        await Task.Run(() => _projects.Add(entity));
         return entity;
     }
 
@@ -59,9 +65,11 @@ public class ProjectRepository() : IProjectRepository
         existingEntity.Description = entity.Description;
         return existingEntity;
     }
+
     public async Task DeleteAsync(Guid id)
     {
-        var entity = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
+        var entity = await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id));
+        if (entity == null) throw new NotFoundException();
         _projects.Remove(entity);
     }
 }

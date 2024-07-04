@@ -1,17 +1,13 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using WebApplication1.Exceptions;
 
 namespace WebApplication1.Middlewares
 {
     public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
     {
-        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception,
+            CancellationToken cancellationToken)
         {
             logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
@@ -42,7 +38,7 @@ namespace WebApplication1.Middlewares
             {
                 Status = statusCode,
                 Title = title,
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1" 
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
             };
 
             httpContext.Response.StatusCode = statusCode;

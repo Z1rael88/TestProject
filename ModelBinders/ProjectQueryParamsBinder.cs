@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using WebApplication1.Dto;
 using WebApplication1.Dtos.ProjectDtos;
-using WebApplication1.Models;
+using WebApplication1.Exceptions;
 
 namespace WebApplication1.ModelBinders;
 
-public class ProjectQueryParamsModelBinder: IModelBinder
+public class ProjectQueryParamsModelBinder : IModelBinder
 {
-    
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
         if (bindingContext == null)
@@ -21,8 +19,8 @@ public class ProjectQueryParamsModelBinder: IModelBinder
 
         var model = new ProjectDto
         {
-            Name = name,
-            Description = description
+            Name = name!,
+            Description = description!
         };
         bindingContext.Result = ModelBindingResult.Success(model);
         return Task.CompletedTask;
@@ -33,16 +31,10 @@ public class ProjectQueryParamsBinder : IModelBinderProvider
 {
     public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
-        if (context.Metadata.ModelType == typeof(ProjectDto))
-        {
-            return new ProjectQueryParamsModelBinder();
-        }
-
-        return null;
+        return context.Metadata.ModelType == typeof(ProjectDto)
+            ? new ProjectQueryParamsModelBinder()
+            : throw new NotFoundException();
     }
 }

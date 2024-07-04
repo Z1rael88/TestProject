@@ -36,8 +36,8 @@ public class TasksController(ITaskService taskService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<bool> DeleteTaskAsync(Guid id)
+    public async Task DeleteTaskAsync(Guid id)
     {
-        return await _taskService.DeleteAsync(id);
+         await _taskService.DeleteAsync(id);
     }
 }

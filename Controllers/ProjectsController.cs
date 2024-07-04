@@ -37,9 +37,9 @@ namespace WebApplication1.Controllers
         }
         
         [HttpDelete("{id}")]
-        public async Task<bool> DeleteProjectAsync(Guid id)
+        public async Task DeleteProjectAsync(Guid id)
         {
-            return await _projectService.DeleteAsync(id);
+            await _projectService.DeleteAsync(id);
         }
     }
 }

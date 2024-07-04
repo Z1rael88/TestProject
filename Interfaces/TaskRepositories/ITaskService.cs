@@ -9,6 +9,6 @@ public interface ITaskService
      Task<ICollection<TaskResponse?>> GetAllAsync(SearchDto searchDto);
      Task<TaskResponse?> GetByIdAsync(Guid id);
      Task<TaskResponse> CreateAsync(TaskRequest taskRequest,Guid projectId);
-     Task<bool> DeleteAsync(Guid id);
+     Task DeleteAsync(Guid id);
      Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest);
 }

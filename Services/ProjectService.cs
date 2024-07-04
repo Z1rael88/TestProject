@@ -53,9 +53,9 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
         var entity= projectRepository.UpdateAsync(id, projectRequest.ProjectRequestToTaskModel());
         return await entity.ProjectToResponseAsync();
     }
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        return await projectRepository.DeleteAsync(id);
+         await projectRepository.DeleteAsync(id);
     }
 }
     

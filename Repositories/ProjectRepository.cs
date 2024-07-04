@@ -59,11 +59,11 @@ public class ProjectRepository() : IProjectRepository
         existingEntity.Description = entity.Description;
         return existingEntity;
     }
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var entity = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
-        if (entity == null) return false;
+       
         _projects.Remove(entity);
-        return true;
+       
     }
 }

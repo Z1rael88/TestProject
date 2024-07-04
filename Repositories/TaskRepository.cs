@@ -49,11 +49,9 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
         existingEntity.ProjectId= entity.ProjectId;
         return existingEntity;
     }
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var taskToDelete = await Task.Run(()=>_tasks.FirstOrDefault(p => p.Id == id));
-        if (taskToDelete == null) return false;
         _tasks.Remove(taskToDelete);
-        return true;
     }
 }

@@ -56,9 +56,9 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
         return  await createdTask.TaskToResponseAsync();
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
-    {
-        return await taskRepository.DeleteAsync(id);
+    public async Task DeleteAsync(Guid id)
+    { 
+        await taskRepository.DeleteAsync(id);
     }
 
     public async Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)

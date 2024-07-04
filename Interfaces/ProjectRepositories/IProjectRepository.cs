@@ -12,5 +12,5 @@ public interface IProjectRepository
     Task<ProjectModel?> GetByIdAsync(Guid id);
     Task<ProjectModel> CreateAsync(ProjectModel entity);
     Task<ProjectModel> UpdateAsync(Guid id, ProjectModel  entity);
-    Task<bool> DeleteAsync(Guid id);
+    Task DeleteAsync(Guid id);
 }

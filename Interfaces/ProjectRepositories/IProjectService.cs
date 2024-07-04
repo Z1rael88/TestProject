@@ -9,6 +9,6 @@ public interface IProjectService
     public Task<ICollection<ProjectResponse>> GetAllAsync(SearchDto searchDto);
     public Task<ProjectResponse?> GetByIdAsync(Guid id);
     public Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest);
-    public Task<bool> DeleteAsync(Guid id);
+    public Task DeleteAsync(Guid id);
     public Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest);
 }

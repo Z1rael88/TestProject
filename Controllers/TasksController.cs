@@ -12,32 +12,32 @@ public class TasksController(ITaskService taskService) : ControllerBase
     private readonly ITaskService _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
 
     [HttpGet]
-    public List<TaskResponse> GetAll([FromQuery] SearchDto searchDto)
+    public async Task<IEnumerable<TaskResponse>> GetAllAsync([FromQuery] SearchDto searchDto)
     {
-        return _taskService.GetAll(searchDto);
+        return await _taskService.GetAllAsync(searchDto);
     }
 
     [HttpGet("{id}")]
-    public TaskResponse? GetById(Guid id)
+    public async Task<TaskResponse?> GetByIdAsync(Guid id)
     {
-        return _taskService.GetById(id);
+        return await _taskService.GetByIdAsync(id);
     }
 
     [HttpPost]
-    public TaskResponse? CreateTask([FromBody]TaskRequest taskRequest,Guid projectId)
+    public async Task<TaskResponse> CreateTaskAsync([FromBody]TaskRequest taskRequest,Guid projectId)
     {
-        return _taskService.Create(taskRequest, projectId);
+        return await _taskService.CreateAsync(taskRequest, projectId);
     }
 
     [HttpPut("{id}")]
-    public TaskResponse? UpdateTask(Guid id, TaskRequest taskDto)
+    public async Task<TaskResponse> UpdateTaskAsync(Guid id, TaskRequest taskDto)
     {
-        return _taskService.Update(id, taskDto);
+        return await _taskService.UpdateAsync(id, taskDto);
     }
 
     [HttpDelete("{id}")]
-    public bool DeleteTask(Guid id)
+    public async Task<bool> DeleteTaskAsync(Guid id)
     {
-        return _taskService.Delete(id);
+        return await _taskService.DeleteAsync(id);
     }
 }

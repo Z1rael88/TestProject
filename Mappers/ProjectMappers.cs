@@ -9,7 +9,7 @@ public static class ProjectMappers
     
     public static async  Task<ProjectResponse> ProjectToResponseAsync(this Task<ProjectModel> project)
     {
-        ProjectModel projectModel = await project.ConfigureAwait(false);
+        var projectModel = await project.ConfigureAwait(false);
         if (projectModel == null)
         {
             throw new ArgumentNullException(nameof(projectModel), "Task model cannot be null.");

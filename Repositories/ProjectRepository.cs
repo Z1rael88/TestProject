@@ -1,10 +1,11 @@
+using WebApplication1.Dtos;
 using WebApplication1.Exceptions;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Models;
 
 namespace WebApplication1.Repositories;
 
-public class MockProjectRepository() : IMockProjectRepository
+public class ProjectRepository() : IProjectRepository
 {
     private static List<ProjectModel> _projects =
     [
@@ -12,19 +13,35 @@ public class MockProjectRepository() : IMockProjectRepository
         new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = [] }
     ];
 
-    public List<ProjectModel> GetAll()
+    public async Task<IEnumerable<ProjectModel>> GetAllAsync(SearchDto searchDto)
     {
-        var allProjects= _projects.ToList();
+        var allProjects = await Task.Run(() => _projects.ToList());
+        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
+        {
+            allProjects = allProjects
+                .Where(p => p.Name.Contains(searchDto.SearchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(searchDto.DescriptionTerm))
+        {
+            allProjects = allProjects
+                .Where(p => p.Name.Contains(searchDto.DescriptionTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (allProjects.Count == 0)
+        {
+            throw new NotFoundException("No projects found matching the search criteria.");
+        }
         return allProjects;
     }
 
-    public ProjectModel? GetById(Guid id)
+    public async Task<ProjectModel?> GetByIdAsync(Guid id)
     {
-        var project = _projects.FirstOrDefault(p => p.Id == id);
+        var project = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
         return project ?? null; ///not null, there is no project
     }
 
-    public ProjectModel Create(ProjectModel entity)
+    public async Task<ProjectModel> CreateAsync(ProjectModel entity)
     {
         if (entity.Id == Guid.Empty)
         {
@@ -34,43 +51,18 @@ public class MockProjectRepository() : IMockProjectRepository
         return entity;
     }
 
-    public ProjectModel? Update(Guid id, ProjectModel entity)
+    public async Task<ProjectModel> UpdateAsync(Guid id, ProjectModel entity)
     {
-        var existingEntity = _projects.FirstOrDefault(p => p.Id == id);
+        var existingEntity = await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id));
         if (existingEntity == null) return null;
         existingEntity.Name = entity.Name;
         existingEntity.Description = entity.Description;
         return existingEntity;
     }
-
-    public List<ProjectModel> Search(string searchTerm, string descriptionTerm)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        var filteredProjects = _projects.ToList();
-        
-        if (!string.IsNullOrEmpty(searchTerm) || !string.IsNullOrEmpty(descriptionTerm))
-        {
-           filteredProjects = filteredProjects
-                .Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
-        if (!string.IsNullOrEmpty(descriptionTerm))
-        {
-            filteredProjects = filteredProjects
-                .Where(p => p.Name.Contains(descriptionTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
-        if (filteredProjects.Count == 0)
-        {
-            throw new NotFoundException("No projects found matching the search criteria.");
-        }
-        return filteredProjects;
-    }
-
-    public bool Delete(Guid id)
-    {
-        var entity = _projects.FirstOrDefault(p => p.Id == id);
+        var entity = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
         if (entity == null) return false;
-        //entity.Tasks.Add();
         _projects.Remove(entity);
         return true;
     }

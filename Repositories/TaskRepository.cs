@@ -1,3 +1,4 @@
+using WebApplication1.Dtos;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
 using WebApplication1.Models;
@@ -12,7 +13,7 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
         new TaskModel { Id = Guid.NewGuid(), Title = "Task 3", Description = "Description 3", Status = Status.Started, ProjectId = Guid.Empty}
     ];
 
-    public async Task<ICollection<TaskModel>> GetAllAsync()
+    public async Task<ICollection<TaskModel>> GetAllAsync(SearchDto searchDto)
     {
         return await Task.Run(() => _tasks);
     }

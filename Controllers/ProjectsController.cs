@@ -2,10 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Dto;
 using WebApplication1.Dtos;
 using WebApplication1.Dtos.ProjectDtos;
-using WebApplication1.Interfaces;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
-using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
@@ -15,33 +13,33 @@ namespace WebApplication1.Controllers
     {
         private readonly IProjectService _projectService = projectService ?? throw new ArgumentNullException(nameof(projectService));
         [HttpGet]
-        public ICollection<ProjectResponse> GetAll([FromQuery]SearchDto searchDto )
+        public async Task<IEnumerable<ProjectResponse>> GetAllAsync([FromQuery]SearchDto searchDto )
         {
-            return _projectService.GetAll(searchDto);
+            return await _projectService.GetAllAsync(searchDto);
         }
         
         [HttpGet("{id}")]
-        public ProjectResponse GetById(Guid id)
+        public async  Task<ProjectResponse> GetByIdAsync(Guid id)
         {
-            return _projectService.GetById(id);
+            return await _projectService.GetByIdAsync(id);
         }
         
         [HttpPost]
-        public ProjectResponse CreateProject(ProjectRequest projectRequest)
+        public async Task<ProjectResponse> CreateProjectAsync(ProjectRequest projectRequest)
         {
-            return _projectService.Create(projectRequest);
+            return await _projectService.CreateAsync(projectRequest);
         }
         
         [HttpPut("{id}")]
-        public ProjectResponse UpdateProject(Guid id, ProjectRequest projectRequest)
+        public async Task<ProjectResponse> UpdateProjectAsync(Guid id, ProjectRequest projectRequest)
         {
-            return _projectService.Update(id, projectRequest);
+            return await _projectService.UpdateAsync(id, projectRequest);
         }
         
         [HttpDelete("{id}")]
-        public bool DeleteProject(Guid id)
+        public async Task<bool> DeleteProjectAsync(Guid id)
         {
-            return _projectService.Delete(id);
+            return await _projectService.DeleteAsync(id);
         }
     }
 }

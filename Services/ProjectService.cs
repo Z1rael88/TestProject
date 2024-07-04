@@ -1,5 +1,7 @@
 using WebApplication1.Dto;
+using WebApplication1.Dtos;
 using WebApplication1.Dtos.ProjectDtos;
+using WebApplication1.Exceptions;
 using WebApplication1.Interfaces;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Mappers;
@@ -9,9 +11,26 @@ namespace WebApplication1.Services;
 
 public class ProjectService(IMockProjectRepository mockProjectRepository) : IProjectService
 {
-    public List<ProjectResponse> GetAll()
+    public ICollection<ProjectResponse> GetAll(SearchDto searchDto)
     {
-        var entities = mockProjectRepository.GetAll().Select(p=>p.ProjectToResponse());
+        var entities = mockProjectRepository.GetAll().Select(p => p.ProjectToResponse());
+        if (entities == null) return null;
+        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
+        {
+            entities = entities
+                .Where(p => p.Name.Contains(searchDto.SearchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(searchDto.DescriptionTerm))
+        {
+            entities = entities
+                .Where(p => p.Name.Contains(searchDto.DescriptionTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (entities.Count() == 0)
+        {
+            throw new NotFoundException("No projects found matching the search criteria.");
+        }
         return entities.ToList();
     }
     public ProjectResponse? GetById(Guid id)
@@ -35,13 +54,6 @@ public class ProjectService(IMockProjectRepository mockProjectRepository) : IPro
         var entity= mockProjectRepository.Update(id, projectRequest.ProjectRequestToTaskModel());
         return entity?.ProjectToResponse();
     }
-
-    public List<ProjectResponse> Search(string searchTerm, string descriptionTerm)
-    {
-        var entities= mockProjectRepository.Search(searchTerm, descriptionTerm);
-        return entities.Select(entity => entity.ProjectToResponse()).ToList();
-    }
-
     public bool Delete(Guid id)
     {
         return mockProjectRepository.Delete(id);

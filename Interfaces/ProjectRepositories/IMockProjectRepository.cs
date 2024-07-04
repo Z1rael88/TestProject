@@ -10,6 +10,5 @@ public interface IMockProjectRepository
     ProjectModel? GetById(Guid id);
     ProjectModel Create(ProjectModel entity);
     ProjectModel? Update(Guid id, ProjectModel  entity);
-    List<ProjectModel> Search(string searchTerm, string descriptionTerm);
     bool Delete(Guid id);
 }

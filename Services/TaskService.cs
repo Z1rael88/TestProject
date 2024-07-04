@@ -8,24 +8,25 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Services;
 
-public class TaskService(IProjectService projectService, IMockTaskRepository mockTaskRepository, IMockProjectRepository mockProjectRepository) : ITaskService
+public class TaskService(IProjectService projectService, ITaskRepository taskRepository, IProjectRepository projectRepository) : ITaskService
 {
-    public List<TaskResponse?> GetAll()
+    public async Task<ICollection<TaskResponse>> GetAllAsync()
     {
-        var entities = mockTaskRepository.GetAll().Select(t => t.TaskToResponse());
-        return entities.ToList();
+        var entities = await taskRepository.GetAllAsync();
+        var responses = entities.Select(p => p.TaskToResponse());
+        return responses.ToList();
     }
 
-    public TaskResponse? GetById(Guid id)
+    public Task<TaskResponse> GetByIdAsync(Guid id)
     {
-        var entity = mockTaskRepository.GetById(id);
-        return entity?.TaskToResponse();
+        var entity = taskRepository.GetByIdAsync(id);
+        return entity.TaskToResponseAsync();
     }
 
-    public TaskResponse? Create(TaskRequest taskRequest, Guid projectId)
+    public Task<TaskResponse> CreateAsync(TaskRequest taskRequest, Guid projectId)
     {
-        var project = projectService.GetById(projectId);
-        if (project.Id == null) return null;
+        var project = projectService.GetByIdAsync(projectId);
+        if (project == null) throw new Exception();
         var taskEntity = new TaskModel
         {
             Title = taskRequest.Title,
@@ -33,18 +34,18 @@ public class TaskService(IProjectService projectService, IMockTaskRepository moc
             Status = taskRequest.Status,
             ProjectId = projectId
         };
-        var createdTask = mockTaskRepository.Create(taskEntity);
-        return createdTask.TaskToResponse();
+        var createdTask = taskRepository.CreateAsync(taskEntity);
+        return createdTask.TaskToResponseAsync();
     }
 
-    public bool Delete(Guid id)
+    public Task<bool> DeleteAsync(Guid id)
     {
-        return mockTaskRepository.Delete(id);
+        return taskRepository.DeleteAsync(id);
     }
 
-    public TaskResponse? Update(Guid id, TaskRequest taskRequest)
+    public Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)
     {
-        var task =  mockTaskRepository.Update(id,taskRequest.TaskRequestToTaskModel());
-        return task?.TaskToResponse();
+        var task =  taskRepository.UpdateAsync(id,taskRequest.TaskRequestToTaskModel());
+        return task.TaskToResponseAsync();
     }
 }

@@ -1,11 +1,9 @@
-using WebApplication1.Dto;
-using WebApplication1.Interfaces;
+using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
-using WebApplication1.Mappers;
 using WebApplication1.Models;
 namespace WebApplication1.Repositories;
 
-public class MockTaskRepository() : IMockTaskRepository
+public class TaskRepository(IProjectRepository projectRepository) : ITaskRepository
 {
     private static List<TaskModel> _tasks =
     [
@@ -14,30 +12,35 @@ public class MockTaskRepository() : IMockTaskRepository
         new TaskModel { Id = Guid.NewGuid(), Title = "Task 3", Description = "Description 3", Status = Status.Started, ProjectId = Guid.Empty}
     ];
 
-    public List<TaskModel> GetAll()
+    public async Task<ICollection<TaskModel>> GetAllAsync()
     {
-        var allTasks= _tasks.ToList();
-        return allTasks;
+        return await Task.Run(() => _tasks);
     }
 
-    public TaskModel? GetById(Guid id)
+    public async Task<TaskModel?> GetByIdAsync(Guid id)
     {
-        return _tasks.FirstOrDefault(t => t.Id == id);
+        return await Task.Run(() => _tasks.FirstOrDefault(t => t.Id == id));
     }
-    public TaskModel Create(TaskModel entity)
+    public async Task<TaskModel> CreateAsync(TaskModel entity)
     {
+        var project = await projectRepository.GetByIdAsync(entity.ProjectId);
+        if (project == null)
+        {
+            throw new Exception();
+        }
+        
         if (entity.Id == Guid.Empty)
         {
             entity.Id = Guid.NewGuid();
         }
         _tasks.Add(entity);
+        project.Tasks.Add(entity);
         return entity;
     }
 
-    public TaskModel? Update(Guid id, TaskModel entity)
+    public async Task<TaskModel> UpdateAsync(Guid id, TaskModel entity)
     {
-        var existingEntity = _tasks.FirstOrDefault(t => t.Id == id);
-
+        var existingEntity = await Task.Run(() => _tasks.FirstOrDefault(t => t.Id == id));
         if ( existingEntity == null || existingEntity.Id == Guid.Empty) return null;
         existingEntity.Title = entity.Title;
         existingEntity.Description = entity.Description;
@@ -45,9 +48,9 @@ public class MockTaskRepository() : IMockTaskRepository
         existingEntity.ProjectId= entity.ProjectId;
         return existingEntity;
     }
-    public bool Delete(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        var taskToDelete = _tasks.FirstOrDefault(p => p.Id == id);
+        var taskToDelete = await Task.Run(()=>_tasks.FirstOrDefault(p => p.Id == id));
         if (taskToDelete == null) return false;
         _tasks.Remove(taskToDelete);
         return true;

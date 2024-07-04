@@ -1,6 +1,6 @@
 namespace WebApplication1.Models;
 
-public record BaseModel
+public class BaseModel
 {
     public Guid Id { get; set; }
 }

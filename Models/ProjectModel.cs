@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.Models;
 
-public record ProjectModel : BaseModel
+public class ProjectModel : BaseModel
 {
     [Required]
     [MaxLength(12)]
@@ -13,5 +13,5 @@ public record ProjectModel : BaseModel
     [Required]
     public DateTime StartDate { get; set; }
 
-    public List<TaskModel> Tasks { get; set; } = new();
+    public ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
 }

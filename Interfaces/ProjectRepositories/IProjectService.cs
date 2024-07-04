@@ -1,15 +1,14 @@
 using WebApplication1.Dto;
 using WebApplication1.Dtos.ProjectDtos;
-using WebApplication1.Models;
 
-namespace WebApplication1.Interfaces;
+namespace WebApplication1.Interfaces.ProjectRepositories;
 
 public interface IProjectService
 {
-    public List<ProjectResponse> GetAll();
-    public ProjectResponse? GetById(Guid id);
-    public ProjectResponse Create(ProjectRequest projectRequest);
-    public bool Delete(Guid id);
-    public ProjectResponse? Update(Guid id, ProjectRequest projectRequest);
+    public Task<ICollection<ProjectResponse>> GetAllAsync();
+    public Task<ProjectResponse?> GetByIdAsync(Guid id);
+    public Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest);
+    public Task<bool> DeleteAsync(Guid id);
+    public Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest);
    
 }

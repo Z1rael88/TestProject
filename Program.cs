@@ -20,8 +20,8 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
-builder.Services.AddScoped<IMockTaskRepository, MockTaskRepository>();
-builder.Services.AddScoped<IMockProjectRepository,MockProjectRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
 builder.Services.AddControllers(options =>
     {
         options.ModelBinderProviders.Insert(0, new ProjectQueryParamsBinder());

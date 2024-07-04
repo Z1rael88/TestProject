@@ -5,9 +5,9 @@ namespace WebApplication1.Interfaces.TaskRepositories;
 
 public interface ITaskService
 {
-    public List<TaskResponse?> GetAll();
-    public TaskResponse? GetById(Guid id);
-    public TaskResponse? Create(TaskRequest taskRequest,Guid projectId);
-    public bool Delete(Guid id);
-    public TaskResponse? Update(Guid id, TaskRequest taskRequest);
+    public Task<ICollection<TaskResponse>> GetAllAsync();
+    public Task<TaskResponse> GetByIdAsync(Guid id);
+    public Task<TaskResponse> CreateAsync(TaskRequest taskRequest,Guid projectId);
+    public Task<bool> DeleteAsync(Guid id);
+    public Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest);
 }

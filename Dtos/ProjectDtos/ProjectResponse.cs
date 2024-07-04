@@ -15,6 +15,6 @@ public record ProjectResponse
     [Required]
     public DateTime StartDate { get; set; }
 
-    public IEnumerable<TaskResponse> Tasks { get; set; } 
+    public ICollection<TaskResponse> Tasks { get; set; } 
 
 }

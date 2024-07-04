@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 
 namespace WebApplication1.Models;
 
-public record TaskModel : BaseModel
+public class TaskModel : BaseModel
 {
     [Required]
     [MaxLength(12)]

@@ -6,7 +6,24 @@ namespace WebApplication1.Mappers;
 
 public static class TaskMappers
 {
-    public static TaskResponse? TaskToResponse(this TaskModel task)
+    public static async Task<TaskResponse> TaskToResponseAsync(this Task<TaskModel> task)
+    {
+        TaskModel taskModel = await task.ConfigureAwait(false);
+        if (taskModel == null)
+        {
+            throw new ArgumentNullException(nameof(taskModel), "Task model cannot be null.");
+        }
+
+        return new TaskResponse
+        {
+            Id = taskModel.Id,
+            Title = taskModel.Title,
+            Description = taskModel.Description,
+            Status = taskModel.Status,
+            ProjectId = taskModel.ProjectId
+        };
+    }
+    public static TaskResponse TaskToResponse(this TaskModel task)
     {
         return new TaskResponse
         {
@@ -17,13 +34,14 @@ public static class TaskMappers
             ProjectId = task.ProjectId
         };
     }
-    public static TaskRequest TaskToRequest(this TaskModel task)
+    public static async  Task<TaskRequest> TaskToRequest(this Task<TaskModel> task)
     {
+        var taskModel = await task;
         return new TaskRequest
         {
-            Title = task.Title,
-            Description = task.Description,
-            Status = task.Status
+            Title = taskModel.Title,
+            Description = taskModel.Description,
+            Status = taskModel.Status
         };
     }
 

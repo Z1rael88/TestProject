@@ -6,24 +6,53 @@ namespace WebApplication1.Mappers;
 
 public static class ProjectMappers
 {
-    public static ProjectResponse ProjectToResponse(this ProjectModel projectModel)
+    
+    public static async  Task<ProjectResponse> ProjectToResponseAsync(this Task<ProjectModel> project)
     {
-        return new ProjectResponse
+        ProjectModel projectModel = await project.ConfigureAwait(false);
+        if (projectModel == null)
+        {
+            throw new ArgumentNullException(nameof(projectModel), "Task model cannot be null.");
+        }
+
+        return new ProjectResponse()
         {
             Id = projectModel.Id,
-            Name = projectModel.Name,
             Description = projectModel.Description,
             StartDate = projectModel.StartDate,
-            Tasks = projectModel.Tasks.Select(t=>t.TaskToResponse())
+            Name = projectModel.Name,
+            Tasks = projectModel.Tasks.Select(p=>p.TaskToResponse()).ToList()
         };
     }
-    public static ProjectRequest ProjectToRequest(this ProjectModel projectModel)
+    public static ProjectResponse ProjectToResponse(this ProjectModel project)
     {
+        return new ProjectResponse()
+        {
+            Id = project.Id,
+            Description = project.Description,
+            StartDate = project.StartDate,
+            Name = project.Name,
+            Tasks = project.Tasks.Select(p=>p.TaskToResponse()).ToList()
+        };
+    }
+    public static async Task<ProjectRequest> ProjectToRequest(this Task<ProjectModel> project)
+    {
+        var projectModel = await project;
         return new ProjectRequest
         {
             Name = projectModel.Name,
             Description = projectModel.Description,
             StartDate = projectModel.StartDate
+        };
+    }
+    public static async  Task<ProjectModel> ProjectRequestToTaskModelAsync(this Task<ProjectRequest> request)
+    {
+        var projectModel = await request;
+        return new ProjectModel
+        {
+            Name = projectModel.Name,
+            Description = projectModel.Description,
+            StartDate = projectModel.StartDate,
         };
     }
     public static ProjectModel ProjectRequestToTaskModel(this ProjectRequest request)

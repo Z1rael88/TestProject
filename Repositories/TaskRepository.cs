@@ -1,4 +1,5 @@
 using WebApplication1.Dtos;
+using WebApplication1.Exceptions;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
 using WebApplication1.Models;
@@ -42,7 +43,7 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
     public async Task<TaskModel> UpdateAsync(Guid id, TaskModel entity)
     {
         var existingEntity = await Task.Run(() => _tasks.FirstOrDefault(t => t.Id == id));
-        if ( existingEntity == null || existingEntity.Id == Guid.Empty) return null;
+        if (existingEntity == null || existingEntity.Id == Guid.Empty) throw new NotFoundException();
         existingEntity.Title = entity.Title;
         existingEntity.Description = entity.Description;
         existingEntity.Status = entity.Status;

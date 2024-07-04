@@ -29,7 +29,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
         }
         if (responses.Count() == 0)
         {
-            throw new NotFoundException("No projects found matching the search criteria.");
+            throw new NotFoundException();
         }
         return responses.ToList();
     }

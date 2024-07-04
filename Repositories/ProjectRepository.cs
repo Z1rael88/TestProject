@@ -30,7 +30,7 @@ public class ProjectRepository() : IProjectRepository
         }
         if (allProjects.Count == 0)
         {
-            throw new NotFoundException("No projects found matching the search criteria.");
+            throw new NotFoundException();
         }
         return allProjects;
     }
@@ -38,7 +38,7 @@ public class ProjectRepository() : IProjectRepository
     public async Task<ProjectModel?> GetByIdAsync(Guid id)
     {
         var project = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
-        return project ?? null; ///not null, there is no project
+        return project ?? throw new NotFoundException();
     }
 
     public async Task<ProjectModel> CreateAsync(ProjectModel entity)
@@ -54,7 +54,7 @@ public class ProjectRepository() : IProjectRepository
     public async Task<ProjectModel> UpdateAsync(Guid id, ProjectModel entity)
     {
         var existingEntity = await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id));
-        if (existingEntity == null) return null;
+        if (existingEntity == null) throw new NotFoundException();
         existingEntity.Name = entity.Name;
         existingEntity.Description = entity.Description;
         return existingEntity;
@@ -62,8 +62,6 @@ public class ProjectRepository() : IProjectRepository
     public async Task DeleteAsync(Guid id)
     {
         var entity = await Task.Run(()=>_projects.FirstOrDefault(p => p.Id == id));
-       
         _projects.Remove(entity);
-       
     }
 }

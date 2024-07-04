@@ -1,26 +1,55 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using WebApplication1.Exceptions;
 
-namespace WebApplication1.Middlewares;
-
-public class GlobalExceptionHandler : IExceptionHandler
+namespace WebApplication1.Middlewares
 {
-    private readonly ILogger<GlobalExceptionHandler> _logger;
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext,
-        Exception exception,
-        CancellationToken cancellationToken)
+    public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
     {
-       _logger.LogError(exception,"Exception occured: {Message}", exception.Message);
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+        {
+            logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
-       var problemDetails = new ProblemDetails()
-       {
-           Status = StatusCodes.Status500InternalServerError,
-           Title = "Server error",
-           Type = "Server error"
-       };
-       httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            int statusCode = StatusCodes.Status500InternalServerError;
+            string title = "Server error";
 
-       await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
-       return true;
+            switch (exception)
+            {
+                case BadHttpRequestException:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    title = "Bad request";
+                    break;
+                case NotFoundException:
+                    statusCode = StatusCodes.Status404NotFound;
+                    title = "Not found,there is no object with that Id";
+                    break;
+                case UnauthorizedAccessException:
+                    statusCode = StatusCodes.Status401Unauthorized;
+                    title = "Unauthorized";
+                    break;
+                case NotImplementedException:
+                    statusCode = StatusCodes.Status501NotImplemented;
+                    title = "Not implemented";
+                    break;
+            }
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = statusCode,
+                Title = title,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1" 
+            };
+
+            httpContext.Response.StatusCode = statusCode;
+
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
+            return true;
+        }
     }
 }

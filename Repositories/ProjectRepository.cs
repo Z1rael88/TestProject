@@ -1,32 +1,30 @@
-using WebApplication1.Dto;
-using WebApplication1.Dtos.ProjectDtos;
+using WebApplication1.Exceptions;
 using WebApplication1.Interfaces.ProjectRepositories;
-using WebApplication1.Interfaces.TaskRepositories;
-using WebApplication1.Mappers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Repositories;
 
-public class ProjectRepository() : IProjectRepository
+public class MockProjectRepository() : IMockProjectRepository
 {
-    private static IList<ProjectModel> _projects =
+    private static List<ProjectModel> _projects =
     [
-        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = new List<TaskModel>() },
-        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = new List<TaskModel>() }
+        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = [] },
+        new ProjectModel { Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = [] }
     ];
 
-    public async Task<ICollection<ProjectModel>> GetAllAsync()
+    public List<ProjectModel> GetAll()
     {
-        return await Task.Run(() => _projects.AsReadOnly());
+        var allProjects= _projects.ToList();
+        return allProjects;
     }
 
-    public async Task<ProjectModel?> GetByIdAsync(Guid id)
+    public ProjectModel? GetById(Guid id)
     {
         var project = _projects.FirstOrDefault(p => p.Id == id);
         return project ?? null; ///not null, there is no project
     }
 
-    public async Task<ProjectModel> CreateAsync(ProjectModel entity)
+    public ProjectModel Create(ProjectModel entity)
     {
         if (entity.Id == Guid.Empty)
         {
@@ -36,19 +34,43 @@ public class ProjectRepository() : IProjectRepository
         return entity;
     }
 
-    public async Task<ProjectModel> UpdateAsync(Guid id, ProjectModel entity)
+    public ProjectModel? Update(Guid id, ProjectModel entity)
     {
-        var existingEntity = await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id)); 
-        if (existingEntity == null) throw new ArgumentException();
+        var existingEntity = _projects.FirstOrDefault(p => p.Id == id);
+        if (existingEntity == null) return null;
         existingEntity.Name = entity.Name;
         existingEntity.Description = entity.Description;
         return existingEntity;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public List<ProjectModel> Search(string searchTerm, string descriptionTerm)
     {
-        var entity = await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id));
+        var filteredProjects = _projects.ToList();
+        
+        if (!string.IsNullOrEmpty(searchTerm) || !string.IsNullOrEmpty(descriptionTerm))
+        {
+           filteredProjects = filteredProjects
+                .Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(descriptionTerm))
+        {
+            filteredProjects = filteredProjects
+                .Where(p => p.Name.Contains(descriptionTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (filteredProjects.Count == 0)
+        {
+            throw new NotFoundException("No projects found matching the search criteria.");
+        }
+        return filteredProjects;
+    }
+
+    public bool Delete(Guid id)
+    {
+        var entity = _projects.FirstOrDefault(p => p.Id == id);
         if (entity == null) return false;
+        //entity.Tasks.Add();
         _projects.Remove(entity);
         return true;
     }

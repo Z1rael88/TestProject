@@ -1,25 +1,44 @@
 using WebApplication1.Dto;
+using WebApplication1.Dtos;
 using WebApplication1.Dtos.ProjectDtos;
+using WebApplication1.Exceptions;
+using WebApplication1.Interfaces;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Mappers;
 using WebApplication1.Models;
 
 namespace WebApplication1.Services;
 
-public class ProjectService(IProjectRepository projectRepository) : IProjectService
+public class ProjectService(IMockProjectRepository mockProjectRepository) : IProjectService
 {
-    public async Task<ICollection<ProjectResponse>> GetAllAsync()
+    public ICollection<ProjectResponse> GetAll(SearchDto searchDto)
     {
-        var entities = await projectRepository.GetAllAsync();
-        var responses = entities.Select(p => p.ProjectToResponse());
-        return responses.ToList();
+        var entities = mockProjectRepository.GetAll().Select(p => p.ProjectToResponse());
+        if (entities == null) return null;
+        if (!string.IsNullOrEmpty(searchDto.SearchTerm))
+        {
+            entities = entities
+                .Where(p => p.Name.Contains(searchDto.SearchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(searchDto.DescriptionTerm))
+        {
+            entities = entities
+                .Where(p => p.Name.Contains(searchDto.DescriptionTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        if (entities.Count() == 0)
+        {
+            throw new NotFoundException("No projects found matching the search criteria.");
+        }
+        return entities.ToList();
     }
-    public async Task<ProjectResponse?> GetByIdAsync(Guid id)
+    public ProjectResponse? GetById(Guid id)
     {
-        var entity =  projectRepository.GetByIdAsync(id);
-        return await entity.ProjectToResponseAsync();
+        var entity =  mockProjectRepository.GetById(id);
+        return entity?.ProjectToResponse();
     }
-    public async Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest)
+    public ProjectResponse Create(ProjectRequest projectRequest)
     {
         var entity = new ProjectModel
         {
@@ -27,17 +46,17 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
             Name = projectRequest.Name,
             StartDate = projectRequest.StartDate,
         };
-        var createdEntity = projectRepository.CreateAsync(entity);
-        return await createdEntity.ProjectToResponseAsync();
+        var createdEntity = mockProjectRepository.Create(entity);
+        return createdEntity.ProjectToResponse();
     }
-    public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
+    public ProjectResponse? Update(Guid id, ProjectRequest projectRequest)
     {
-        var entity= projectRepository.UpdateAsync(id, projectRequest.ProjectRequestToTaskModel());
-        return await entity?.ProjectToResponseAsync();
+        var entity= mockProjectRepository.Update(id, projectRequest.ProjectRequestToTaskModel());
+        return entity?.ProjectToResponse();
     }
-    public async Task<bool> DeleteAsync(Guid id)
+    public bool Delete(Guid id)
     {
-        return await projectRepository.DeleteAsync(id);
+        return mockProjectRepository.Delete(id);
     }
 }
     

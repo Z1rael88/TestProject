@@ -6,11 +6,11 @@ namespace WebApplication1.Dtos.ProjectDtos;
 public record ProjectRequest
 {
     [Required]
-    [MaxLength(ModelLimits.NameLimit)]
+    [MaxLength(ModelLimits.NameInputLimit)]
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(ModelLimits.DescriptionLimit)]
+    [MaxLength(ModelLimits.DescriptionInputLimit)]
     public string Description { get; set; } = string.Empty;
 
     [Required] public DateTime StartDate { get; set; }

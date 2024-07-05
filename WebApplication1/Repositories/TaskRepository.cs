@@ -13,17 +13,17 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
     [
         new TaskModel
         {
-            Id = Guid.NewGuid(), Title = "Task 1", Description = "Description 1", Status = Status.Started,
+            Id = Guid.NewGuid(), Name = "Task 1", Description = "Description 1", Status = Status.Started,
             ProjectId = Guid.Empty
         },
         new TaskModel
         {
-            Id = Guid.NewGuid(), Title = "Task 2", Description = "Description 2", Status = Status.Completed,
+            Id = Guid.NewGuid(), Name = "Task 2", Description = "Description 2", Status = Status.Completed,
             ProjectId = Guid.Empty
         },
         new TaskModel
         {
-            Id = Guid.NewGuid(), Title = "Task 3", Description = "Description 3", Status = Status.Started,
+            Id = Guid.NewGuid(), Name = "Task 3", Description = "Description 3", Status = Status.Started,
             ProjectId = Guid.Empty
         }
     ];
@@ -36,7 +36,7 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
             if (!string.IsNullOrEmpty(searchParams.NameTerm))
             {
                 allTasks = allTasks
-                    .Where(p => p.Title.Contains(searchParams.NameTerm, StringComparison.OrdinalIgnoreCase));
+                    .Where(p => p.Name.Contains(searchParams.NameTerm, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrEmpty(searchParams.DescriptionTerm))

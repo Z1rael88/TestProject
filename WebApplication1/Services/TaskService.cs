@@ -32,7 +32,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
         if (project == null) throw new NotFoundException();
         var taskEntity = new TaskModel
         {
-            Title = taskRequest.Title,
+            Name = taskRequest.Title,
             Description = taskRequest.Description,
             Status = taskRequest.Status,
             ProjectId = projectId
@@ -49,7 +49,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
     public async Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)
     {
         var entity = await taskRepository.UpdateAsync(id, taskRequest.TaskRequestToTaskModel());
-        entity.Title = entity.Title;
+        entity.Name = entity.Name;
         entity.Description = entity.Description;
         entity.Status = entity.Status;
         entity.ProjectId = entity.ProjectId;

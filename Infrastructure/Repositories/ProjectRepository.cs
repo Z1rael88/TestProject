@@ -5,7 +5,7 @@ using Domain.SearchParams;
 
 namespace Infrastructure.Repositories;
 
-public class ProjectRepository : IProjectRepository
+public class ProjectRepository() : IProjectRepository
 {
     private static ICollection<ProjectModel> _projects =
     [
@@ -100,7 +100,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var entity = await GetByIdAsync(id);
-        _projects.Remove(entity);
+        var project = await GetByIdAsync(id);
+        _projects.Remove(project);
     }
 }

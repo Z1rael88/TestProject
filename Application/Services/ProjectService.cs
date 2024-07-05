@@ -8,7 +8,7 @@ using Domain.SearchParams;
 
 namespace Application.Services;
 
-public class ProjectService(IProjectRepository projectRepository) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, ITaskRepository taskRepository) : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
@@ -46,6 +46,11 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
 
     public async Task DeleteAsync(Guid id)
     {
+        var tasks = await taskRepository.GetAllAsync(new TaskSearchParams(){ProjectId = id});
+        foreach (var task in tasks)
+        {
+            await taskRepository.DeleteAsync(task.Id);
+        }
         await projectRepository.DeleteAsync(id);
     }
 }

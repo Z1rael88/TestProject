@@ -20,9 +20,9 @@ namespace Presentation.Middlewares
 
                 switch (ex)
                 {
-                    case BadHttpRequestException:
+                    case ArgumentException:
                         statusCode = StatusCodes.Status400BadRequest;
-                        title = "Bad request";
+                        title = ex.Message;
                         break;
                     case NotFoundException:
                         statusCode = StatusCodes.Status404NotFound;

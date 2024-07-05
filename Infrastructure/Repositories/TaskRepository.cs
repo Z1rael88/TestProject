@@ -60,6 +60,12 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
                     .Where(p => p.Status == searchParams.Status);
             }
 
+            if (searchParams.ProjectId != null)
+            {
+                allTasks = allTasks
+                    .Where(p => p.ProjectId == searchParams.ProjectId);
+            }
+
             return allTasks;
         });
     }
@@ -85,6 +91,7 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
         {
             task.Id = Guid.NewGuid();
         }
+
         await Task.Run(() =>
         {
             _tasks.Add(task);
@@ -96,8 +103,6 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
     public async Task<TaskModel> UpdateAsync(TaskModel task)
     {
         var existingTask = await GetByIdAsync(task.Id);
-        if (existingTask == null || existingTask.Id == Guid.Empty)
-            throw new NotFoundException($"Task with {task.Id} not found");
         return existingTask;
     }
 

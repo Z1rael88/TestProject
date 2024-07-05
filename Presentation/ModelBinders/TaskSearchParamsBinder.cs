@@ -17,14 +17,22 @@ public class TaskSearchParamsModelBinder : IModelBinder
         var name = valueProvider.GetValue("name").FirstValue;
         var description = valueProvider.GetValue("description").FirstValue;
         var status = valueProvider.GetValue("status").FirstValue;
-
-        var model = new TaskSearchParams
+        var projectId = valueProvider.GetValue("projectId").FirstValue;
+        try
         {
-            Name = name,
-            Description = description,
-            Status = status != null ? Enum.Parse<Status>(status) : null
-        };
-        bindingContext.Result = ModelBindingResult.Success(model);
+            var model = new TaskSearchParams
+            {
+                Name = name,
+                Description = description,
+                Status = status != null ? Enum.Parse<Status>(status) : null,
+                ProjectId = projectId != null ? Guid.Parse(projectId) : null  
+            };
+            bindingContext.Result = ModelBindingResult.Success(model);
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentException(e.Message);
+        }
         return Task.CompletedTask;
     }
 }

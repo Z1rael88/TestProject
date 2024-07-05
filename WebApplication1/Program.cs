@@ -1,12 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Application.Interfaces;
+using Domain.Repositories;
 using Microsoft.OpenApi.Models;
+using Presentation.Middlewares;
 using WebApplication1.Interfaces;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
-using WebApplication1.Middlewares;
 using WebApplication1.ModelBinders;
-using WebApplication1.Repositories;
 using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -71,7 +71,7 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
             var task = _tasks.FirstOrDefault(p => p.Id == id);
             if (task == null)
             {
-                throw new NotFoundException();
+                throw new NotFoundException($"Task with {id} not found");
             }
 
             return task;
@@ -81,16 +81,10 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
     public async Task<TaskModel> CreateAsync(TaskModel task)
     {
         var project = await projectRepository.GetByIdAsync(task.ProjectId);
-        if (project == null)
-        {
-            throw new NotFoundException("Project with that Id not found");
-        }
-
         if (task.Id == Guid.Empty)
         {
             task.Id = Guid.NewGuid();
         }
-
         await Task.Run(() =>
         {
             _tasks.Add(task);
@@ -99,20 +93,18 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
         return task;
     }
 
-    public async Task<TaskModel> UpdateAsync(Guid id, TaskModel task)
+    public async Task<TaskModel> UpdateAsync(TaskModel task)
     {
-        var existingTask = await GetByIdAsync(id);
+        var existingTask = await GetByIdAsync(task.Id);
         if (existingTask == null || existingTask.Id == Guid.Empty)
-            throw new NotFoundException("Task with that Id not found");
+            throw new NotFoundException($"Task with {task.Id} not found");
         return existingTask;
     }
 
     public async Task DeleteAsync(Guid id)
     {
         var task = await GetByIdAsync(id);
-        if (task == null) throw new NotFoundException("Task with that Id not found");
         var project = await projectRepository.GetByIdAsync(task.ProjectId);
-        if (project == null) throw new NotFoundException("Project with that Id not found");
         project.Tasks.Remove(task);
         _tasks.Remove(task);
     }

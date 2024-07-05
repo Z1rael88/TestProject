@@ -17,6 +17,7 @@ public class TaskSearchParamsModelBinder : IModelBinder
         var name = valueProvider.GetValue("name").FirstValue;
         var description = valueProvider.GetValue("description").FirstValue;
         var status = valueProvider.GetValue("status").FirstValue;
+
         var model = new TaskSearchParams
         {
             Name = name,

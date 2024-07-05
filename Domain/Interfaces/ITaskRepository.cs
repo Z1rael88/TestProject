@@ -8,6 +8,6 @@ public interface ITaskRepository
     Task<IEnumerable<TaskModel>> GetAllAsync(TaskSearchParams taskSearchParams);
     Task<TaskModel> GetByIdAsync(Guid id);
     Task<TaskModel> CreateAsync(TaskModel task);
-    Task<TaskModel> UpdateAsync(Guid id, TaskModel task);
+    Task<TaskModel> UpdateAsync(TaskModel task);
     Task DeleteAsync(Guid id);
 }

@@ -15,8 +15,8 @@ namespace Presentation.Middlewares
             {
                 logger.LogError(ex, "Exception occurred: {Message}", ex.Message);
 
-                int statusCode = StatusCodes.Status500InternalServerError;
-                string title = "Server error";
+                var statusCode = StatusCodes.Status500InternalServerError;
+                var title = "Server error";
 
                 switch (ex)
                 {
@@ -44,7 +44,6 @@ namespace Presentation.Middlewares
                 {
                     Status = statusCode,
                     Title = title,
-                    Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
                 };
 
                 await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken: CancellationToken.None);

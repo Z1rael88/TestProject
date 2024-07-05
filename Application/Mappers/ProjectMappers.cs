@@ -5,7 +5,7 @@ namespace Application.Mappers;
 
 public static class ProjectMappers
 {
-    public static ProjectResponse ProjectToResponse(this ProjectModel project)
+    public static ProjectResponse ToResponse(this ProjectModel project)
     {
         return new ProjectResponse()
         {
@@ -13,17 +13,7 @@ public static class ProjectMappers
             Description = project.Description,
             StartDate = project.StartDate,
             Name = project.Name,
-            Tasks = project.Tasks.Select(p => p.TaskToResponse())
-        };
-    }
-
-    public static ProjectModel ProjectRequestToTaskModel(this ProjectRequest request)
-    {
-        return new ProjectModel
-        {
-            Name = request.Name,
-            Description = request.Description,
-            StartDate = request.StartDate,
+            Tasks = project.Tasks.Select(p => p.ToResponse())
         };
     }
 }

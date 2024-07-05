@@ -13,32 +13,29 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
     public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
     {
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
-        var responses = tasks.Select(p => p.TaskToResponse());
+        var responses = tasks.Select(p => p.ToResponse());
 
-        return responses.ToList();
+        return responses;
     }
-
 
     public async Task<TaskResponse> GetByIdAsync(Guid id)
     {
         var task = await taskRepository.GetByIdAsync(id);
-        if (task == null) throw new NotFoundException("Task with that Id not found");
-        return task.TaskToResponse();
+        return task.ToResponse();
     }
 
-    public async Task<TaskResponse> CreateAsync(TaskRequest taskRequest, Guid projectId)
+    public async Task<TaskResponse> CreateAsync(CreateTaskRequest taskRequest)
     {
-        var project = await projectService.GetByIdAsync(projectId);
-        if (project == null) throw new NotFoundException("Task with that Id not found");
+        var project = await projectService.GetByIdAsync(taskRequest.ProjectId);
         var task = new TaskModel
         {
             Name = taskRequest.Name,
             Description = taskRequest.Description,
             Status = taskRequest.Status,
-            ProjectId = projectId
+            ProjectId = project.Id
         };
         var createdTask = await taskRepository.CreateAsync(task);
-        return createdTask.TaskToResponse();
+        return createdTask.ToResponse();
     }
 
     public async Task DeleteAsync(Guid id)
@@ -52,7 +49,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
         task.Name = taskRequest.Name;
         task.Description = taskRequest.Description;
         task.Status = taskRequest.Status;
-        var response = await taskRepository.UpdateAsync(id, taskRequest.TaskRequestToTaskModel());
-        return response.TaskToResponse();
+        var updatedTask = await taskRepository.UpdateAsync(task);
+        return updatedTask.ToResponse();
     }
 }

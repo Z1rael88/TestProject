@@ -24,9 +24,9 @@ public class TasksController(ITaskService taskService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<TaskResponse> CreateTaskAsync([FromBody] TaskRequest taskRequest, Guid projectId)
+    public async Task<TaskResponse> CreateTaskAsync([FromBody] CreateTaskRequest taskRequest)
     {
-        return await _taskService.CreateAsync(taskRequest, projectId);
+        return await _taskService.CreateAsync(taskRequest);
     }
 
     [HttpPut("{id}")]

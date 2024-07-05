@@ -15,5 +15,5 @@ public class TaskModel : BaseModel
     public string Description { get; set; } = string.Empty;
 
     [Required] public Status Status { get; set; }
-    public Guid ProjectId { get; set; }
+    [Required] public Guid ProjectId { get; set; }
 }

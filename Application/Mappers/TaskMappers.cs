@@ -5,7 +5,7 @@ namespace Application.Mappers;
 
 public static class TaskMappers
 {
-    public static TaskResponse TaskToResponse(this TaskModel task)
+    public static TaskResponse ToResponse(this TaskModel task)
     {
         return new TaskResponse
         {
@@ -13,17 +13,6 @@ public static class TaskMappers
             Name = task.Name,
             Description = task.Description,
             Status = task.Status,
-            ProjectId = task.ProjectId
-        };
-    }
-
-    public static TaskModel TaskRequestToTaskModel(this TaskRequest request)
-    {
-        return new TaskModel
-        {
-            Name = request.Name,
-            Description = request.Description,
-            Status = request.Status,
         };
     }
 }

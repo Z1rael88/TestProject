@@ -71,13 +71,13 @@ public class ProjectRepository : IProjectRepository
     {
         return await Task.Run(() =>
         {
-            var task = _projects.FirstOrDefault(p => p.Id == id);
-            if (task == null)
+            var project = _projects.FirstOrDefault(p => p.Id == id);
+            if (project == null)
             {
-                throw new NotFoundException();
+                throw new NotFoundException($"Project with {id} not found");
             }
 
-            return task;
+            return project;
         });
     }
 
@@ -92,17 +92,15 @@ public class ProjectRepository : IProjectRepository
         return project;
     }
 
-    public async Task<ProjectModel> UpdateAsync(Guid id, ProjectModel project)
+    public async Task<ProjectModel> UpdateAsync(ProjectModel project)
     {
-        var existingEntity = await GetByIdAsync(id);
-        if (existingEntity == null) throw new NotFoundException("Project with that Id not found");
+        var existingEntity = await GetByIdAsync(project.Id);
         return existingEntity;
     }
 
     public async Task DeleteAsync(Guid id)
     {
         var entity = await GetByIdAsync(id);
-        if (entity == null) throw new NotFoundException("Project with that Id not found");
         _projects.Remove(entity);
     }
 }

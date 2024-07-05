@@ -26,7 +26,7 @@ namespace Presentation.Middlewares
                         break;
                     case NotFoundException:
                         statusCode = StatusCodes.Status404NotFound;
-                        title = "Not found, there is no object with that Id";
+                        title = ex.Message;
                         break;
                     case UnauthorizedAccessException:
                         statusCode = StatusCodes.Status401Unauthorized;

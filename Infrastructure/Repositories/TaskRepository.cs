@@ -66,7 +66,16 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
 
     public async Task<TaskModel> GetByIdAsync(Guid id)
     {
-        return (await Task.Run(() => _tasks.FirstOrDefault(t => t.Id == id)))!;
+        return await Task.Run(() =>
+        {
+            var task = _tasks.FirstOrDefault(p => p.Id == id);
+            if (task == null)
+            {
+                throw new NotFoundException();
+            }
+
+            return task;
+        });
     }
 
     public async Task<TaskModel> CreateAsync(TaskModel task)

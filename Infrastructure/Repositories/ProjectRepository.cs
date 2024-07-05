@@ -69,7 +69,16 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<ProjectModel> GetByIdAsync(Guid id)
     {
-        return (await Task.Run(() => _projects.FirstOrDefault(p => p.Id == id)))!;
+        return await Task.Run(() =>
+        {
+            var task = _projects.FirstOrDefault(p => p.Id == id);
+            if (task == null)
+            {
+                throw new NotFoundException();
+            }
+
+            return task;
+        });
     }
 
     public async Task<ProjectModel> CreateAsync(ProjectModel project)

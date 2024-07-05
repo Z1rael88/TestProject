@@ -13,5 +13,5 @@ public record ProjectRequest
     [MaxLength(ModelLimits.DescriptionInputLimit)]
     public string Description { get; set; } = string.Empty;
 
-    [Required] public DateTime StartDate { get; set; }
+    [Required] public DateOnly StartDate { get; set; }
 }

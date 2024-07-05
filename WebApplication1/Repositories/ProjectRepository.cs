@@ -11,11 +11,11 @@ public class ProjectRepository : IProjectRepository
     [
         new ProjectModel
         {
-            Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateTime.Now, Tasks = []
+            Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateOnly.MinValue, Tasks = []
         },
         new ProjectModel
         {
-            Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateTime.Now, Tasks = []
+            Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateOnly.MinValue, Tasks = []
         }
     ];
 
@@ -24,19 +24,35 @@ public class ProjectRepository : IProjectRepository
         return await Task.Run(() =>
         {
             var allProjects = _projects.AsQueryable();
-            if (!string.IsNullOrEmpty(projectSearchParams.NameTerm))
+            if (!string.IsNullOrEmpty(projectSearchParams.Name))
             {
                 allProjects = allProjects
-                    .Where(p => p.Name.Contains(projectSearchParams.NameTerm, StringComparison.OrdinalIgnoreCase));
+                    .Where(p => p.Name.Contains(projectSearchParams.Name, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (!string.IsNullOrEmpty(projectSearchParams.DescriptionTerm))
+            if (!string.IsNullOrEmpty(projectSearchParams.Description))
             {
                 allProjects = allProjects
-                    .Where(p => p.Description.Contains(projectSearchParams.DescriptionTerm,
+                    .Where(p => p.Description.Contains(projectSearchParams.Description,
                         StringComparison.OrdinalIgnoreCase));
             }
 
+            if (projectSearchParams.StartDate.HasValue)
+            {
+                allProjects = allProjects
+                    .Where(p => p.StartDate == projectSearchParams.StartDate.Value);
+            }
+            if (projectSearchParams.StartDateFrom.HasValue)
+            {
+                allProjects = allProjects
+                    .Where(p => p.StartDate >= projectSearchParams.StartDateFrom.Value);
+            }
+
+            if (projectSearchParams.StartDateTo.HasValue)
+            {
+                allProjects = allProjects
+                    .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
+            }
             return allProjects;
         });
     }

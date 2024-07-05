@@ -34,10 +34,12 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
     }
     public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
     {
-        var entity= await projectRepository.UpdateAsync(id, projectRequest.ProjectRequestToTaskModel());
-        entity.Name = entity.Name;
-        entity.Description = entity.Description;
-        return entity.ProjectToResponse();
+        var entity = await projectRepository.GetByIdAsync(id);
+        if (entity == null) throw new NotFoundException();
+        entity.Name = projectRequest.Name;
+        entity.Description = projectRequest.Description;
+        var response= await projectRepository.UpdateAsync(id, projectRequest.ProjectRequestToTaskModel());
+        return response.ProjectToResponse();
     }
     public async Task DeleteAsync(Guid id)
     {

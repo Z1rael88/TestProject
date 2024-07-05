@@ -9,7 +9,7 @@ public record ProjectResponse
     public Guid Id { get; set; }
     [Required] [MaxLength(ModelLimits.NameInputLimit)] public string Name { get; set; } = string.Empty;
     [Required] [MaxLength(ModelLimits.DescriptionInputLimit)] public string Description { get; set; } = string.Empty;
-    [Required] public DateTime StartDate { get; set; }
+    [Required] public DateOnly StartDate { get; set; }
 
     public IEnumerable<TaskResponse>? Tasks { get; set; }
 }

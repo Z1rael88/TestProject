@@ -13,7 +13,7 @@ namespace WebApplication1.Controllers
             projectService ?? throw new ArgumentNullException(nameof(projectService));
 
         [HttpGet]
-        public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
+        public async Task<IEnumerable<ProjectResponse>> GetAllAsync([FromQuery]ProjectSearchParams projectSearchParams)
         {
             return await _projectService.GetAllAsync(projectSearchParams);
         }

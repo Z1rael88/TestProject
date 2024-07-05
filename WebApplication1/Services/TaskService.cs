@@ -1,6 +1,7 @@
 using WebApplication1.Dtos.SearchParams;
 using WebApplication1.Dtos.TaskDtos;
 using WebApplication1.Exceptions;
+using WebApplication1.Interfaces;
 using WebApplication1.Interfaces.ProjectRepositories;
 using WebApplication1.Interfaces.TaskRepositories;
 using WebApplication1.Mappers;
@@ -32,7 +33,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
         if (project == null) throw new NotFoundException();
         var taskEntity = new TaskModel
         {
-            Name = taskRequest.Title,
+            Name = taskRequest.Name,
             Description = taskRequest.Description,
             Status = taskRequest.Status,
             ProjectId = projectId
@@ -48,11 +49,11 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
 
     public async Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)
     {
-        var entity = await taskRepository.UpdateAsync(id, taskRequest.TaskRequestToTaskModel());
-        entity.Name = entity.Name;
-        entity.Description = entity.Description;
-        entity.Status = entity.Status;
-        entity.ProjectId = entity.ProjectId;
+        var entity = await taskRepository.GetByIdAsync(id);
+        entity.Name = taskRequest.Name;
+        entity.Description = taskRequest.Description;
+        entity.Status = taskRequest.Status;
+        var response = await taskRepository.UpdateAsync(id, taskRequest.TaskRequestToTaskModel());
         return entity.TaskToResponse();
     }
 }

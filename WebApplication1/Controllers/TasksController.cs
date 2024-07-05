@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Dtos.SearchParams;
 using WebApplication1.Dtos.TaskDtos;
+using WebApplication1.Interfaces;
 using WebApplication1.Interfaces.TaskRepositories;
 
 namespace WebApplication1.Controllers;

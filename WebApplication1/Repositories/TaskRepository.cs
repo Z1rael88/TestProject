@@ -33,17 +33,17 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
         return await Task.Run(() =>
         {
             var allTasks = _tasks.AsQueryable();
-            if (!string.IsNullOrEmpty(searchParams.NameTerm))
+            if (!string.IsNullOrEmpty(searchParams.Name))
             {
                 allTasks = allTasks
-                    .Where(p => p.Name.Contains(searchParams.NameTerm, StringComparison.OrdinalIgnoreCase));
+                    .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (!string.IsNullOrEmpty(searchParams.DescriptionTerm))
+            if (!string.IsNullOrEmpty(searchParams.Description))
             {
                 allTasks = allTasks
                     .Where(
-                        p => p.Description.Contains(searchParams.DescriptionTerm, StringComparison.OrdinalIgnoreCase));
+                        p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
             }
 
             return allTasks;

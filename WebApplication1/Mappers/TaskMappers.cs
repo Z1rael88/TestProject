@@ -10,7 +10,7 @@ public static class TaskMappers
         return new TaskResponse
         {
             Id = task.Id,
-            Title = task.Name,
+            Name = task.Name,
             Description = task.Description,
             Status = task.Status,
             ProjectId = task.ProjectId
@@ -20,7 +20,7 @@ public static class TaskMappers
     {
         return new TaskModel
         {
-            Name = request.Title,
+            Name = request.Name,
             Description = request.Description,
             Status = request.Status,
         };

@@ -38,13 +38,12 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
         if (entity == null) throw new NotFoundException();
         entity.Name = projectRequest.Name;
         entity.Description = projectRequest.Description;
-        var response= await projectRepository.UpdateAsync(id, projectRequest.ProjectRequestToTaskModel());
+        var response = await projectRepository.UpdateAsync(id, projectRequest.ProjectRequestToTaskModel());
         return response.ProjectToResponse();
     }
     public async Task DeleteAsync(Guid id)
     {
-         await projectRepository.DeleteAsync(id);
+        await projectRepository.DeleteAsync(id);
     }
 }
-    
-    
+

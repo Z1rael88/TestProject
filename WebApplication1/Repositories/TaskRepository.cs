@@ -13,17 +13,26 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
     [
         new TaskModel
         {
-            Id = Guid.NewGuid(), Name = "Task 1", Description = "Description 1", Status = Status.Started,
+            Id = Guid.NewGuid(),
+            Name = "Task 1",
+            Description = "Description 1",
+            Status = Status.Started,
             ProjectId = Guid.Empty
         },
         new TaskModel
         {
-            Id = Guid.NewGuid(), Name = "Task 2", Description = "Description 2", Status = Status.Completed,
+            Id = Guid.NewGuid(),
+            Name = "Task 2",
+            Description = "Description 2",
+            Status = Status.Completed,
             ProjectId = Guid.Empty
         },
         new TaskModel
         {
-            Id = Guid.NewGuid(), Name = "Task 3", Description = "Description 3", Status = Status.Started,
+            Id = Guid.NewGuid(),
+            Name = "Task 3",
+            Description = "Description 3",
+            Status = Status.Started,
             ProjectId = Guid.Empty
         }
     ];
@@ -86,14 +95,14 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
 
     public async Task DeleteAsync(Guid id)
     {
-         await Task.Run(async() =>
-        {
-            var entity =  _tasks.FirstOrDefault(p => p.Id == id);
-            if (entity == null) throw new NotFoundException();
-            var project = await projectRepository.GetByIdAsync(entity.ProjectId);
-            if (project == null) throw new NotFoundException();
-             project.Tasks.Remove(entity);
-            _tasks.Remove(entity);
-        });
+        await Task.Run(async () =>
+       {
+           var entity = _tasks.FirstOrDefault(p => p.Id == id);
+           if (entity == null) throw new NotFoundException();
+           var project = await projectRepository.GetByIdAsync(entity.ProjectId);
+           if (project == null) throw new NotFoundException();
+           project.Tasks.Remove(entity);
+           _tasks.Remove(entity);
+       });
     }
 }

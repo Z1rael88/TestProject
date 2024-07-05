@@ -11,11 +11,19 @@ public class ProjectRepository : IProjectRepository
     [
         new ProjectModel
         {
-            Id = Guid.NewGuid(), Name = "Project 1", Description = "Description 1", StartDate = DateOnly.MinValue, Tasks = []
+            Id = Guid.NewGuid(),
+            Name = "Project 1",
+            Description = "Description 1",
+            StartDate = DateOnly.MinValue,
+            Tasks = []
         },
         new ProjectModel
         {
-            Id = Guid.NewGuid(), Name = "Project 2", Description = "Description 2", StartDate = DateOnly.MinValue, Tasks = []
+            Id = Guid.NewGuid(),
+            Name = "Project 2",
+            Description = "Description 2",
+            StartDate = DateOnly.MinValue,
+            Tasks = []
         }
     ];
 
@@ -84,7 +92,7 @@ public class ProjectRepository : IProjectRepository
     {
         await Task.Run(() =>
         {
-            var entity =  _projects.FirstOrDefault(p => p.Id == id);
+            var entity = _projects.FirstOrDefault(p => p.Id == id);
             if (entity == null) throw new NotFoundException();
             _projects.Remove(entity);
         });

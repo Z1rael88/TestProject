@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Constants;
-using WebApplication1.Models;
 
 namespace Domain.Models;
 

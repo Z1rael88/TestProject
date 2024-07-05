@@ -6,7 +6,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Presentation.Middlewares;
 using Presentation.ModelBinders;
-using WebApplication1.Interfaces;
 
 namespace Presentation;
 
@@ -16,7 +15,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
         builder.Services.AddAuthorization();
         builder.Services.AddControllers(options =>
             {
@@ -32,7 +30,6 @@ public class Program
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -45,12 +42,12 @@ public class Program
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
         app.UseMiddleware<GlobalExceptionHandler>();
         app.UseRouting();
         app.UseHttpsRedirection();

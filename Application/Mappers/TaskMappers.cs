@@ -1,8 +1,7 @@
 using Application.Dtos.TaskDtos;
 using Domain.Models;
-using WebApplication1.Models;
 
-namespace WebApplication1.Mappers;
+namespace Application.Mappers;
 
 public static class TaskMappers
 {
@@ -17,6 +16,7 @@ public static class TaskMappers
             ProjectId = task.ProjectId
         };
     }
+
     public static TaskModel TaskRequestToTaskModel(this TaskRequest request)
     {
         return new TaskModel

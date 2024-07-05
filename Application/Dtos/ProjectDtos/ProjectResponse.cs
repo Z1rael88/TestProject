@@ -18,5 +18,5 @@ public record ProjectResponse
 
     [Required] public DateOnly StartDate { get; set; }
 
-    public IEnumerable<TaskResponse>? Tasks { get; set; }
+    public IEnumerable<TaskResponse> Tasks { get; set; }
 }

@@ -1,7 +1,7 @@
 using Application.Dtos.TaskDtos;
 using Domain.SearchParams;
 
-namespace WebApplication1.Interfaces;
+namespace Application.Interfaces;
 
 public interface ITaskService
 {

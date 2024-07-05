@@ -1,6 +1,5 @@
 using Domain.Models;
 using Domain.SearchParams;
-using WebApplication1.Models;
 
 namespace Domain.Interfaces;
 

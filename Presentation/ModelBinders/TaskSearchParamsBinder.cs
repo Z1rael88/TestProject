@@ -26,11 +26,6 @@ public class TaskSearchParamsModelBinder : IModelBinder
         bindingContext.Result = ModelBindingResult.Success(model);
         return Task.CompletedTask;
     }
-
-    private DateOnly? GetDate(string? date)
-    {
-        return date != null ? DateOnly.Parse(date) : null;
-    }
 }
 
 public class TaskSearchParamsBinder : IModelBinderProvider

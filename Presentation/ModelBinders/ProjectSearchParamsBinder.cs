@@ -18,15 +18,22 @@ public class ProjectSearchParamsModelBinder : IModelBinder
         var startDate = valueProvider.GetValue("StartDate").FirstValue;
         var startDateFrom = valueProvider.GetValue("StartDateFrom").FirstValue;
         var startDateTo = valueProvider.GetValue("StartDateTo").FirstValue;
-        var model = new ProjectSearchParams
+        try
         {
-            Name = name,
-            Description = description,
-            StartDate = GetDate(startDate),
-            StartDateFrom = GetDate(startDateFrom),
-            StartDateTo = GetDate(startDateTo)
-        };
-        bindingContext.Result = ModelBindingResult.Success(model);
+            var model = new ProjectSearchParams
+            {
+                Name = name,
+                Description = description,
+                StartDate = GetDate(startDate),
+                StartDateFrom = GetDate(startDateFrom),
+                StartDateTo = GetDate(startDateTo)
+            };
+            bindingContext.Result = ModelBindingResult.Success(model);
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentException(e.Message);
+        }
         return Task.CompletedTask;
     }
 

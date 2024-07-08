@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,IOptions<ModelValidationOptions> validationOptions)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IOptions<ModelValidationOptions> validationOptions)
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<ProjectModel> Projects { get; set; }

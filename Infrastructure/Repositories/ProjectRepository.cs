@@ -10,40 +10,43 @@ public class ProjectRepository(IApplicationDbContext dbContext) : IProjectReposi
 {
     public async Task<IEnumerable<ProjectModel>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
-        var allProjects = dbContext.Projects.AsQueryable();
-        if (!string.IsNullOrEmpty(projectSearchParams.Name))
+        return await Task.Run(() =>
         {
-            allProjects = allProjects
-                .Where(p => p.Name.Contains(projectSearchParams.Name, StringComparison.OrdinalIgnoreCase));
-        }
+            var allProjects = dbContext.Projects.AsQueryable();
+            if (!string.IsNullOrEmpty(projectSearchParams.Name))
+            {
+                allProjects = allProjects
+                    .Where(p => p.Name.Contains(projectSearchParams.Name, StringComparison.OrdinalIgnoreCase));
+            }
 
-        if (!string.IsNullOrEmpty(projectSearchParams.Description))
-        {
-            allProjects = allProjects
-                .Where(p => p.Description.Contains(projectSearchParams.Description,
-                    StringComparison.OrdinalIgnoreCase));
-        }
+            if (!string.IsNullOrEmpty(projectSearchParams.Description))
+            {
+                allProjects = allProjects
+                    .Where(p => p.Description.Contains(projectSearchParams.Description,
+                        StringComparison.OrdinalIgnoreCase));
+            }
 
-        if (projectSearchParams.StartDate.HasValue)
-        {
-            allProjects = allProjects
-                .Where(p => p.StartDate == projectSearchParams.StartDate.Value);
-        }
+            if (projectSearchParams.StartDate.HasValue)
+            {
+                allProjects = allProjects
+                    .Where(p => p.StartDate == projectSearchParams.StartDate.Value);
+            }
 
-        if (projectSearchParams.StartDateFrom.HasValue)
-        {
-            allProjects = allProjects
-                .Where(p => p.StartDate >= projectSearchParams.StartDateFrom.Value);
-        }
+            if (projectSearchParams.StartDateFrom.HasValue)
+            {
+                allProjects = allProjects
+                    .Where(p => p.StartDate >= projectSearchParams.StartDateFrom.Value);
+            }
 
-        if (projectSearchParams.StartDateTo.HasValue)
-        {
-            allProjects = allProjects
-                .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
-        }
+            if (projectSearchParams.StartDateTo.HasValue)
+            {
+                allProjects = allProjects
+                    .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
+            }
 
-        allProjects = allProjects.Include(p => p.Tasks);
-        return allProjects;
+            allProjects = allProjects.Include(p => p.Tasks);
+            return allProjects;
+        });
     }
 
     public async Task<ProjectModel> GetByIdAsync(Guid id)
@@ -59,22 +62,16 @@ public class ProjectRepository(IApplicationDbContext dbContext) : IProjectReposi
 
     public async Task<ProjectModel> CreateAsync(ProjectModel project)
     {
-        if (project.Id == Guid.Empty)
-        {
-            project.Id = Guid.NewGuid();
-        }
-
-        dbContext.Projects.Add(project);
+        var newProject = dbContext.Projects.Add(project);
         await dbContext.SaveChangesAsync();
-        return project;
+        return newProject.Entity;
     }
 
     public async Task<ProjectModel> UpdateAsync(ProjectModel project)
     {
-        var existingProject = await GetByIdAsync(project.Id);
-        dbContext.Projects.Update(existingProject);
+        var updatedProject = dbContext.Projects.Update(project);
         await dbContext.SaveChangesAsync();
-        return existingProject;
+        return updatedProject.Entity;
     }
 
     public async Task DeleteAsync(Guid id)

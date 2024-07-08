@@ -1,4 +1,3 @@
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
@@ -7,37 +6,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class TaskRepository(IProjectRepository projectRepository, IApplicationDbContext dbContext) : ITaskRepository
+public class TaskRepository(IApplicationDbContext dbContext) : ITaskRepository
 {
     public async Task<IEnumerable<TaskModel>> GetAllAsync(TaskSearchParams searchParams)
     {
-        var allTasks = dbContext.Tasks.AsQueryable();
-        if (!string.IsNullOrEmpty(searchParams.Name))
+        return await Task.Run(() =>
         {
-            allTasks = allTasks
-                .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
-        }
+            var allTasks = dbContext.Tasks.AsQueryable();
+            if (!string.IsNullOrEmpty(searchParams.Name))
+            {
+                allTasks = allTasks
+                    .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
+            }
 
-        if (!string.IsNullOrEmpty(searchParams.Description))
-        {
-            allTasks = allTasks
-                .Where(
-                    p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
-        }
+            if (!string.IsNullOrEmpty(searchParams.Description))
+            {
+                allTasks = allTasks
+                    .Where(
+                        p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
+            }
 
-        if (searchParams.Status != null)
-        {
-            allTasks = allTasks
-                .Where(p => p.Status == searchParams.Status);
-        }
+            if (searchParams.Status != null)
+            {
+                allTasks = allTasks
+                    .Where(p => p.Status == searchParams.Status);
+            }
 
-        if (searchParams.ProjectId != null)
-        {
-            allTasks = allTasks
-                .Where(p => p.ProjectId == searchParams.ProjectId);
-        }
+            if (searchParams.ProjectId != null)
+            {
+                allTasks = allTasks
+                    .Where(p => p.ProjectId == searchParams.ProjectId);
+            }
 
-        return allTasks;
+            return allTasks;
+        });
     }
 
     public async Task<TaskModel> GetByIdAsync(Guid id)
@@ -53,22 +55,16 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
 
     public async Task<TaskModel> CreateAsync(TaskModel task)
     {
-        if (task.Id == Guid.Empty)
-        {
-            task.Id = Guid.NewGuid();
-        }
-
-        dbContext.Tasks.Add(task);
+        var newTask = dbContext.Tasks.Add(task);
         await dbContext.SaveChangesAsync();
-        return task;
+        return newTask.Entity;
     }
 
     public async Task<TaskModel> UpdateAsync(TaskModel task)
     {
-        var existingTask = await GetByIdAsync(task.Id);
-        dbContext.Tasks.Update(existingTask);
+        var updatedTask = dbContext.Tasks.Update(task);
         await dbContext.SaveChangesAsync();
-        return existingTask;
+        return updatedTask.Entity;
     }
 
     public async Task DeleteAsync(Guid id)

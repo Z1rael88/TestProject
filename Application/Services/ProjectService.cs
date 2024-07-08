@@ -46,7 +46,7 @@ public class ProjectService(IProjectRepository projectRepository, ITaskRepositor
 
     public async Task DeleteAsync(Guid id)
     {
-        var tasks = await taskRepository.GetAllAsync(new TaskSearchParams(){ProjectId = id});
+        var tasks = await taskRepository.GetAllAsync(new TaskSearchParams() { ProjectId = id });
         foreach (var task in tasks)
         {
             await taskRepository.DeleteAsync(task.Id);

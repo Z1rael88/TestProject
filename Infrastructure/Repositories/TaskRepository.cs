@@ -11,32 +11,32 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
 {
     public async Task<IEnumerable<TaskModel>> GetAllAsync(TaskSearchParams searchParams)
     {
-            var allTasks = dbContext.Tasks.AsQueryable();
-            if (!string.IsNullOrEmpty(searchParams.Name))
-            {
-                allTasks = allTasks
-                    .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
-            }
+        var allTasks = dbContext.Tasks.AsQueryable();
+        if (!string.IsNullOrEmpty(searchParams.Name))
+        {
+            allTasks = allTasks
+                .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
+        }
 
-            if (!string.IsNullOrEmpty(searchParams.Description))
-            {
-                allTasks = allTasks
-                    .Where(
-                        p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
-            }
+        if (!string.IsNullOrEmpty(searchParams.Description))
+        {
+            allTasks = allTasks
+                .Where(
+                    p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
+        }
 
-            if (searchParams.Status != null)
-            {
-                allTasks = allTasks
-                    .Where(p => p.Status == searchParams.Status);
-            }
+        if (searchParams.Status != null)
+        {
+            allTasks = allTasks
+                .Where(p => p.Status == searchParams.Status);
+        }
 
-            if (searchParams.ProjectId != null)
-            {
-                allTasks = allTasks
-                    .Where(p => p.ProjectId == searchParams.ProjectId);
-            }
-             return await allTasks.ToListAsync();
+        if (searchParams.ProjectId != null)
+        {
+            allTasks = allTasks
+                .Where(p => p.ProjectId == searchParams.ProjectId);
+        }
+        return await allTasks.ToListAsync();
     }
 
     public async Task<TaskModel> GetByIdAsync(Guid id)

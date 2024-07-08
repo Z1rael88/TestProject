@@ -67,6 +67,7 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
     {
         var existingTask = await GetByIdAsync(task.Id);
         dbContext.Tasks.Update(existingTask);
+        await dbContext.SaveChangesAsync();
         return existingTask;
     }
 

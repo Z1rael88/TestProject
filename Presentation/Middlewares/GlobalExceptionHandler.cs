@@ -1,5 +1,5 @@
 using Domain.Exceptions;
-using Microsoft.AspNetCore.Mvc;
+using Presentation.Responses;
 
 namespace Presentation.Middlewares
 {
@@ -16,37 +16,37 @@ namespace Presentation.Middlewares
                 logger.LogError(ex, "Exception occurred: {Message}", ex.Message);
 
                 var statusCode = StatusCodes.Status500InternalServerError;
-                var title = "Server error";
+                var message = "Server error";
 
                 switch (ex)
                 {
                     case ArgumentException:
+                    case FluentValidation.ValidationException:
                         statusCode = StatusCodes.Status400BadRequest;
-                        title = ex.Message;
+                        message = ex.Message;
                         break;
                     case NotFoundException:
                         statusCode = StatusCodes.Status404NotFound;
-                        title = ex.Message;
+                        message = ex.Message;
                         break;
                     case UnauthorizedAccessException:
                         statusCode = StatusCodes.Status401Unauthorized;
-                        title = "Unauthorized";
+                        message = "Unauthorized";
                         break;
                     case NotImplementedException:
                         statusCode = StatusCodes.Status501NotImplemented;
-                        title = "Not implemented";
+                        message = "Not implemented";
                         break;
                 }
 
                 context.Response.StatusCode = statusCode;
 
-                var problemDetails = new ProblemDetails
+                var exceptionResponse = new ExceptionResponse
                 {
-                    Status = statusCode,
-                    Title = title,
+                    Message = message,
                 };
 
-                await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken: CancellationToken.None);
+                await context.Response.WriteAsJsonAsync(exceptionResponse);
             }
         }
     }

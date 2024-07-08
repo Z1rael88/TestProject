@@ -2,7 +2,7 @@ using Domain.Enums;
 
 namespace Application.Dtos.TaskDtos;
 
-public record TaskResponse
+public class TaskResponse
 {
     public Guid Id { get; set; }
 
@@ -11,5 +11,4 @@ public record TaskResponse
     public string Description { get; set; } = string.Empty;
 
     public Status Status { get; set; }
-
 }

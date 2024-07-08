@@ -46,7 +46,6 @@ public class ProjectService(IProjectRepository projectRepository, ITaskRepositor
 
     public async Task DeleteAsync(Guid id)
     {
-
         await projectRepository.DeleteAsync(id);
     }
 }

@@ -74,8 +74,6 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
     public async Task DeleteAsync(Guid id)
     {
         var task = await GetByIdAsync(id);
-        var project = await projectRepository.GetByIdAsync(task.ProjectId);
-        project.Tasks.Remove(task);
         dbContext.Tasks.Remove(task);
         await dbContext.SaveChangesAsync();
     }

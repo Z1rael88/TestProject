@@ -1,13 +1,16 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
+using Domain.Models;
 using Domain.SearchParams;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectsController(IProjectService projectService) : ControllerBase
+    public class ProjectsController(IProjectService projectService, IValidator<ProjectRequest> validator)
+        : ControllerBase
     {
         private readonly IProjectService _projectService =
             projectService ?? throw new ArgumentNullException(nameof(projectService));
@@ -27,12 +30,14 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<ProjectResponse> CreateProjectAsync(ProjectRequest projectRequest)
         {
+            await validator.ValidateAndThrowAsync(projectRequest);
             return await _projectService.CreateAsync(projectRequest);
         }
 
         [HttpPut("{id}")]
         public async Task<ProjectResponse> UpdateProjectAsync(Guid id, ProjectRequest projectRequest)
         {
+            await validator.ValidateAndThrowAsync(projectRequest);
             return await _projectService.UpdateAsync(id, projectRequest);
         }
 

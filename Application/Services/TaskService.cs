@@ -14,7 +14,6 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
     {
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
         var responses = tasks.Select(p => p.ToResponse());
-
         return responses;
     }
 

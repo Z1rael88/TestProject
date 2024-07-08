@@ -3,15 +3,13 @@ using Domain.Constants;
 
 namespace Application.Dtos.ProjectDtos;
 
-public record ProjectRequest
+public class ProjectRequest
 {
-    [Required]
-    [MaxLength(ModelLimits.NameMaxLength)]
+   
     public string Name { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(ModelLimits.DescriptionMaxLength)]
+    
     public string Description { get; set; } = string.Empty;
 
-    [Required] public DateOnly StartDate { get; set; }
+     public DateOnly StartDate { get; set; }
 }

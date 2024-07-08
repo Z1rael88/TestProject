@@ -2,7 +2,7 @@ using Application.Dtos.TaskDtos;
 
 namespace Application.Dtos.ProjectDtos;
 
-public record ProjectResponse
+public class ProjectResponse
 {
     public Guid Id { get; set; }
 

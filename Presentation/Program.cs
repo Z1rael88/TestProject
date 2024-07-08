@@ -1,8 +1,11 @@
+using System.Reflection;
 using Application.Interfaces;
 using Application.Services;
 using Domain;
 using Domain.Interfaces;
+using FluentValidation;
 using Infrastructure;
+using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
@@ -32,11 +35,10 @@ public class Program
                 };
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
-
         builder.Services.AddEndpointsApiExplorer();
         var configuration = builder.Configuration;
         builder.Services.Configure<ModelValidationOptions>(configuration.GetSection("ModelValidation"));
-        
+
         builder.Configuration.AddJsonFile("appsettings.json");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
@@ -47,6 +49,8 @@ public class Program
         builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
         builder.Services.AddScoped<ITaskRepository, TaskRepository>();
         builder.Services.AddScoped<GlobalExceptionHandler>();
+
+        builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
 
         builder.Services.AddSwaggerGen();
 

@@ -80,6 +80,7 @@ public class ProjectRepository(IApplicationDbContext dbContext) : IProjectReposi
     {
         var project = await GetByIdAsync(id);
         dbContext.Projects.Remove(project);
+        dbContext.Tasks.RemoveRange(project.Tasks);
         await dbContext.SaveChangesAsync();
     }
 }

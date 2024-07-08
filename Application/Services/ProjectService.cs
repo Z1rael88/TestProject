@@ -51,6 +51,7 @@ public class ProjectService(IProjectRepository projectRepository, ITaskRepositor
         {
             await taskRepository.DeleteAsync(task.Id);
         }
+
         await projectRepository.DeleteAsync(id);
     }
 }

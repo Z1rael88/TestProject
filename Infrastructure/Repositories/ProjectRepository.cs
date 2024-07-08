@@ -43,7 +43,7 @@ public class ProjectRepository(IApplicationDbContext dbContext) : IProjectReposi
         }
 
         allProjects = allProjects.Include(p => p.Tasks);
-        return await allProjects.ToListAsync();
+        return allProjects;
     }
 
     public async Task<ProjectModel> GetByIdAsync(Guid id)

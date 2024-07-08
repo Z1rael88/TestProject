@@ -36,7 +36,8 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
             allTasks = allTasks
                 .Where(p => p.ProjectId == searchParams.ProjectId);
         }
-        return await allTasks.ToListAsync();
+
+        return allTasks;
     }
 
     public async Task<TaskModel> GetByIdAsync(Guid id)
@@ -58,7 +59,6 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
             task.Id = Guid.NewGuid();
         }
         dbContext.Tasks.Add(task);
-        project.Tasks.Add(task);
         await dbContext.SaveChangesAsync();
         return task;
     }

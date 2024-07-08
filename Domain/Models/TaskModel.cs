@@ -16,4 +16,5 @@ public class TaskModel : BaseModel
 
     [Required] public Status Status { get; set; }
     [Required] public Guid ProjectId { get; set; }
+    public ProjectModel Project { get; set; }
 }

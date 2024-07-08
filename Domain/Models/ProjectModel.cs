@@ -14,6 +14,5 @@ public class ProjectModel : BaseModel
     public string Description { get; set; } = string.Empty;
 
     [Required] public DateOnly StartDate { get; init; }
-
-    public ICollection<TaskModel> Tasks { get; init; } = new List<TaskModel>();
+    [Required] public ICollection<TaskModel> Tasks { get; init; } = new List<TaskModel>();
 }

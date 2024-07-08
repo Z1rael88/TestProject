@@ -2,36 +2,15 @@ using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class ProjectRepository() : IProjectRepository
+public class ProjectRepository(IApplicationDbContext dbContext) : IProjectRepository
 {
-    private static ICollection<ProjectModel> _projects =
-    [
-        new ProjectModel
-        {
-            Id = Guid.NewGuid(),
-            Name = "Project 1",
-            Description = "Description 1",
-            StartDate = DateOnly.MinValue,
-            Tasks = []
-        },
-        new ProjectModel
-        {
-            Id = Guid.NewGuid(),
-            Name = "Project 2",
-            Description = "Description 2",
-            StartDate = DateOnly.MinValue,
-            Tasks = []
-        }
-    ];
-
     public async Task<IEnumerable<ProjectModel>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
-        return await Task.Run(() =>
-        {
-            var allProjects = _projects.AsQueryable();
+            var allProjects = dbContext.Projects.AsQueryable();
             if (!string.IsNullOrEmpty(projectSearchParams.Name))
             {
                 allProjects = allProjects
@@ -63,22 +42,19 @@ public class ProjectRepository() : IProjectRepository
                     .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
             }
 
-            return allProjects;
-        });
+            allProjects = allProjects.Include(p => p.Tasks);
+            return await allProjects.ToListAsync();
     }
 
     public async Task<ProjectModel> GetByIdAsync(Guid id)
     {
-        return await Task.Run(() =>
+        var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        if (project == null)
         {
-            var project = _projects.FirstOrDefault(p => p.Id == id);
-            if (project == null)
-            {
-                throw new NotFoundException($"Project with {id} not found");
-            }
+            throw new NotFoundException($"Project with {id} not found");
+        }
 
-            return project;
-        });
+        return project;
     }
 
     public async Task<ProjectModel> CreateAsync(ProjectModel project)
@@ -88,19 +64,22 @@ public class ProjectRepository() : IProjectRepository
             project.Id = Guid.NewGuid();
         }
 
-        await Task.Run(() => _projects.Add(project));
+        dbContext.Projects.Add(project);
+        await dbContext.SaveChangesAsync();
         return project;
     }
 
     public async Task<ProjectModel> UpdateAsync(ProjectModel project)
     {
         var existingEntity = await GetByIdAsync(project.Id);
+        await dbContext.SaveChangesAsync();
         return existingEntity;
     }
 
     public async Task DeleteAsync(Guid id)
     {
         var project = await GetByIdAsync(id);
-        _projects.Remove(project);
+        dbContext.Projects.Remove(project);
+        await dbContext.SaveChangesAsync();
     }
 }

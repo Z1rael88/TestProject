@@ -32,7 +32,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
             Name = taskRequest.Name,
             Description = taskRequest.Description,
             Status = taskRequest.Status,
-            ProjectId = project.Id
+            ProjectId = project.Id,
         };
         var createdTask = await taskRepository.CreateAsync(task);
         return createdTask.ToResponse();

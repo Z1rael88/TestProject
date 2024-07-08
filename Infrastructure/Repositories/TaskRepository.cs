@@ -53,11 +53,11 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
 
     public async Task<TaskModel> CreateAsync(TaskModel task)
     {
-        var project = await projectRepository.GetByIdAsync(task.ProjectId);
         if (task.Id == Guid.Empty)
         {
             task.Id = Guid.NewGuid();
         }
+
         dbContext.Tasks.Add(task);
         await dbContext.SaveChangesAsync();
         return task;
@@ -66,7 +66,7 @@ public class TaskRepository(IProjectRepository projectRepository, IApplicationDb
     public async Task<TaskModel> UpdateAsync(TaskModel task)
     {
         var existingTask = await GetByIdAsync(task.Id);
-        await dbContext.SaveChangesAsync();
+        dbContext.Tasks.Update(existingTask);
         return existingTask;
     }
 

@@ -1,7 +1,9 @@
 using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
+using Infrastructure;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Presentation.Middlewares;
@@ -31,6 +33,12 @@ public class Program
             });
 
         builder.Services.AddEndpointsApiExplorer();
+        builder.Configuration.AddJsonFile("appsettings.json");
+        var configuration = builder.Configuration;
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
         builder.Services.AddScoped<IProjectService, ProjectService>();
         builder.Services.AddScoped<ITaskService, TaskService>();

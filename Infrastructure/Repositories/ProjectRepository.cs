@@ -71,9 +71,10 @@ public class ProjectRepository(IApplicationDbContext dbContext) : IProjectReposi
 
     public async Task<ProjectModel> UpdateAsync(ProjectModel project)
     {
-        var existingEntity = await GetByIdAsync(project.Id);
+        var existingProject = await GetByIdAsync(project.Id);
+        dbContext.Projects.Update(existingProject);
         await dbContext.SaveChangesAsync();
-        return existingEntity;
+        return existingProject;
     }
 
     public async Task DeleteAsync(Guid id)

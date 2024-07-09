@@ -1,6 +1,5 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
-using Domain.Models;
 using Domain.SearchParams;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;

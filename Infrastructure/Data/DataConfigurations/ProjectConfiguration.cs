@@ -1,11 +1,12 @@
 using Domain;
 using Domain.Models;
+using Domain.ValidationOptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.DataConfigurations;
 
-public class ProjectConfiguration(ModelValidationOptions validationOptions) : IEntityTypeConfiguration<ProjectModel>
+public class ProjectConfiguration(ProjectValidationOptions validationOptions) : IEntityTypeConfiguration<ProjectModel>
 {
     public void Configure(EntityTypeBuilder<ProjectModel> builder)
     {

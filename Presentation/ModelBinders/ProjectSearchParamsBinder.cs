@@ -34,6 +34,7 @@ public class ProjectSearchParamsModelBinder : IModelBinder
         {
             throw new ArgumentException(e.Message);
         }
+
         return Task.CompletedTask;
     }
 

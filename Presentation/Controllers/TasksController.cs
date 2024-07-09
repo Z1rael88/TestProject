@@ -8,7 +8,10 @@ namespace Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TasksController(ITaskService taskService, IValidator<TaskRequest> validator, IValidator<CreateTaskRequest> createValidator) : ControllerBase
+public class TasksController(
+    ITaskService taskService,
+    IValidator<TaskRequest> validator,
+    IValidator<CreateTaskRequest> createValidator) : ControllerBase
 {
     private readonly ITaskService _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
 

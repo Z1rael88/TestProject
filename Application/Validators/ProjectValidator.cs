@@ -1,5 +1,5 @@
 using Application.Dtos.ProjectDtos;
-using Domain;
+using Domain.ValidationOptions;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 
@@ -7,7 +7,7 @@ namespace Application.Validators;
 
 public class ProjectValidator : AbstractValidator<ProjectRequest>
 {
-    public ProjectValidator(IOptions<ModelValidationOptions> validationOptions)
+    public ProjectValidator(IOptions<ProjectValidationOptions> validationOptions)
     {
         RuleFor(p => p.Name)
             .NotEmpty().WithMessage("Name is required")

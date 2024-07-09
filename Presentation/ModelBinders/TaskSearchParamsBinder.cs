@@ -33,6 +33,7 @@ public class TaskSearchParamsModelBinder : IModelBinder
         {
             throw new ArgumentException(e.Message);
         }
+
         return Task.CompletedTask;
     }
 }

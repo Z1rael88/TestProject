@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Domain.Constants;
-
 namespace Domain.Models;
 
 public class ProjectModel : BaseModel

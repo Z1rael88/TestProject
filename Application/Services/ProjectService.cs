@@ -1,14 +1,13 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
 using Application.Mappers;
-using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
 
 namespace Application.Services;
 
-public class ProjectService(IProjectRepository projectRepository, ITaskRepository taskRepository) : IProjectService
+public class ProjectService(IProjectRepository projectRepository) : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Domain.Constants;
 using Domain.Enums;
 
 namespace Domain.Models;

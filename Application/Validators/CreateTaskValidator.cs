@@ -1,5 +1,5 @@
 using Application.Dtos.TaskDtos;
-using Domain;
+using Domain.ValidationOptions;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 
@@ -7,7 +7,7 @@ namespace Application.Validators;
 
 public class CreateTaskValidator : AbstractValidator<CreateTaskRequest>
 {
-    public CreateTaskValidator(IOptions<ModelValidationOptions> validationOptions)
+    public CreateTaskValidator(IOptions<TaskValidationOptions> validationOptions)
     {
         RuleFor(p => p.Name)
             .NotEmpty().WithMessage("Name is required")

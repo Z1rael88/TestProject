@@ -1,7 +1,6 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
 using Application.Mappers;
-using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;

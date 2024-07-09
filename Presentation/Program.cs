@@ -3,8 +3,8 @@ using Application.Interfaces;
 using Application.Services;
 using Domain;
 using Domain.Interfaces;
+using Domain.ValidationOptions;
 using FluentValidation;
-using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -37,9 +37,9 @@ public class Program
             });
         builder.Services.AddEndpointsApiExplorer();
         var configuration = builder.Configuration;
-        builder.Services.Configure<ModelValidationOptions>(configuration.GetSection("ModelValidation"));
+        builder.Services.Configure<ProjectValidationOptions>(configuration.GetSection("ProjectValidation"));
+        builder.Services.Configure<TaskValidationOptions>(configuration.GetSection("TaskValidation"));
 
-        builder.Configuration.AddJsonFile("appsettings.json");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 

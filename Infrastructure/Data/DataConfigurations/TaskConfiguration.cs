@@ -1,11 +1,11 @@
-using Domain;
 using Domain.Models;
+using Domain.ValidationOptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.DataConfigurations;
 
-public class TaskConfiguration(ModelValidationOptions validationOptions) : IEntityTypeConfiguration<TaskModel>
+public class TaskConfiguration(TaskValidationOptions validationOptions) : IEntityTypeConfiguration<TaskModel>
 {
     public void Configure(EntityTypeBuilder<TaskModel> builder)
     {
@@ -17,7 +17,6 @@ public class TaskConfiguration(ModelValidationOptions validationOptions) : IEnti
             .IsRequired()
             .HasMaxLength(validationOptions.DescriptionMaxLength);
         builder.Property(t => t.Status)
-            .IsRequired()
-            .HasConversion<int>();
+            .IsRequired();
     }
 }

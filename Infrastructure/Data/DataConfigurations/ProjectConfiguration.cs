@@ -1,4 +1,3 @@
-using Domain;
 using Domain.Models;
 using Domain.ValidationOptions;
 using Microsoft.EntityFrameworkCore;

@@ -9,9 +9,7 @@ namespace Presentation.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class TasksController(
-    ITaskService taskService,
-    IValidator<TaskRequest> validator,
-    IValidator<CreateTaskRequest> createValidator) : ControllerBase
+    ITaskService taskService) : ControllerBase
 {
     private readonly ITaskService _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
 
@@ -30,14 +28,12 @@ public class TasksController(
     [HttpPost]
     public async Task<TaskResponse> CreateTaskAsync([FromBody] CreateTaskRequest taskRequest)
     {
-        await createValidator.ValidateAndThrowAsync(taskRequest);
         return await _taskService.CreateAsync(taskRequest);
     }
 
     [HttpPut("{id}")]
     public async Task<TaskResponse> UpdateTaskAsync(Guid id, TaskRequest taskRequest)
     {
-        await validator.ValidateAndThrowAsync(taskRequest);
         return await _taskService.UpdateAsync(id, taskRequest);
     }
 

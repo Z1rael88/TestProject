@@ -4,10 +4,11 @@ using Application.Mappers;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
+using FluentValidation;
 
 namespace Application.Services;
 
-public class ProjectService(IProjectRepository projectRepository) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, IValidator<ProjectRequest> validator) : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
@@ -24,6 +25,7 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
 
     public async Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest)
     {
+        await validator.ValidateAndThrowAsync(projectRequest);
         var project = new ProjectModel
         {
             Description = projectRequest.Description,
@@ -36,6 +38,7 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
 
     public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
     {
+        await validator.ValidateAndThrowAsync(projectRequest);
         var project = await projectRepository.GetByIdAsync(id);
         project.Name = projectRequest.Name;
         project.Description = projectRequest.Description;

@@ -13,7 +13,7 @@ namespace Presentation.Middlewares
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Exception occurred: {Message}", ex.Message);
+                logger.LogError(ex, $"Exception occurred: {ex.Message}");
 
                 var statusCode = StatusCodes.Status500InternalServerError;
                 var message = "Server error";

@@ -8,7 +8,8 @@ using FluentValidation;
 
 namespace Application.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IValidator<ProjectRequest> validator) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, IValidator<ProjectRequest> projectValidator)
+    : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
@@ -25,7 +26,7 @@ public class ProjectService(IProjectRepository projectRepository, IValidator<Pro
 
     public async Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest)
     {
-        await validator.ValidateAndThrowAsync(projectRequest);
+        await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = new ProjectModel
         {
             Description = projectRequest.Description,
@@ -38,7 +39,7 @@ public class ProjectService(IProjectRepository projectRepository, IValidator<Pro
 
     public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
     {
-        await validator.ValidateAndThrowAsync(projectRequest);
+        await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = await projectRepository.GetByIdAsync(id);
         project.Name = projectRequest.Name;
         project.Description = projectRequest.Description;

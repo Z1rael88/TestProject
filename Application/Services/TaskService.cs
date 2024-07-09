@@ -11,8 +11,8 @@ namespace Application.Services;
 public class TaskService(
     IProjectService projectService,
     ITaskRepository taskRepository,
-    IValidator<TaskRequest> validator,
-    IValidator<CreateTaskRequest> createValidator) : ITaskService
+    IValidator<TaskRequest> taskValidator,
+    IValidator<CreateTaskRequest> createTaskValidator) : ITaskService
 {
     public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
     {
@@ -29,7 +29,7 @@ public class TaskService(
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest taskRequest)
     {
-        await createValidator.ValidateAndThrowAsync(taskRequest);
+        await createTaskValidator.ValidateAndThrowAsync(taskRequest);
         var project = await projectService.GetByIdAsync(taskRequest.ProjectId);
         var task = new TaskModel
         {
@@ -49,7 +49,7 @@ public class TaskService(
 
     public async Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)
     {
-        await validator.ValidateAndThrowAsync(taskRequest);
+        await taskValidator.ValidateAndThrowAsync(taskRequest);
         var task = await taskRepository.GetByIdAsync(id);
         task.Name = taskRequest.Name;
         task.Description = taskRequest.Description;

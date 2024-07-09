@@ -1,46 +1,18 @@
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class TaskRepository(IProjectRepository projectRepository) : ITaskRepository
+public class TaskRepository(IApplicationDbContext dbContext) : ITaskRepository
 {
-    private static ICollection<TaskModel> _tasks =
-    [
-        new TaskModel
-        {
-            Id = Guid.NewGuid(),
-            Name = "Task 1",
-            Description = "Description 1",
-            Status = Status.Started,
-            ProjectId = Guid.Empty
-        },
-        new TaskModel
-        {
-            Id = Guid.NewGuid(),
-            Name = "Task 2",
-            Description = "Description 2",
-            Status = Status.Completed,
-            ProjectId = Guid.Empty
-        },
-        new TaskModel
-        {
-            Id = Guid.NewGuid(),
-            Name = "Task 3",
-            Description = "Description 3",
-            Status = Status.Started,
-            ProjectId = Guid.Empty
-        }
-    ];
-
     public async Task<IEnumerable<TaskModel>> GetAllAsync(TaskSearchParams searchParams)
     {
         return await Task.Run(() =>
         {
-            var allTasks = _tasks.AsQueryable();
+            var allTasks = dbContext.Tasks.AsQueryable();
             if (!string.IsNullOrEmpty(searchParams.Name))
             {
                 allTasks = allTasks
@@ -72,45 +44,33 @@ public class TaskRepository(IProjectRepository projectRepository) : ITaskReposit
 
     public async Task<TaskModel> GetByIdAsync(Guid id)
     {
-        return await Task.Run(() =>
+        var task = await dbContext.Tasks.FirstOrDefaultAsync(p => p.Id == id);
+        if (task == null)
         {
-            var task = _tasks.FirstOrDefault(p => p.Id == id);
-            if (task == null)
-            {
-                throw new NotFoundException($"Task with {id} not found");
-            }
+            throw new NotFoundException($"Task with {id} not found");
+        }
 
-            return task;
-        });
+        return task;
     }
 
     public async Task<TaskModel> CreateAsync(TaskModel task)
     {
-        var project = await projectRepository.GetByIdAsync(task.ProjectId);
-        if (task.Id == Guid.Empty)
-        {
-            task.Id = Guid.NewGuid();
-        }
-
-        await Task.Run(() =>
-        {
-            _tasks.Add(task);
-            project.Tasks.Add(task);
-        });
-        return task;
+        var newTask = dbContext.Tasks.Add(task);
+        await dbContext.SaveChangesAsync();
+        return newTask.Entity;
     }
 
     public async Task<TaskModel> UpdateAsync(TaskModel task)
     {
-        var existingTask = await GetByIdAsync(task.Id);
-        return existingTask;
+        var updatedTask = dbContext.Tasks.Update(task);
+        await dbContext.SaveChangesAsync();
+        return updatedTask.Entity;
     }
 
     public async Task DeleteAsync(Guid id)
     {
         var task = await GetByIdAsync(id);
-        var project = await projectRepository.GetByIdAsync(task.ProjectId);
-        project.Tasks.Remove(task);
-        _tasks.Remove(task);
+        dbContext.Tasks.Remove(task);
+        await dbContext.SaveChangesAsync();
     }
 }

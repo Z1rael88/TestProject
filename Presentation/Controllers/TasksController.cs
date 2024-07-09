@@ -7,7 +7,8 @@ namespace Presentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TasksController(ITaskService taskService) : ControllerBase
+public class TasksController(
+    ITaskService taskService) : ControllerBase
 {
     private readonly ITaskService _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
 
@@ -30,9 +31,9 @@ public class TasksController(ITaskService taskService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<TaskResponse> UpdateTaskAsync(Guid id, TaskRequest taskDto)
+    public async Task<TaskResponse> UpdateTaskAsync(Guid id, TaskRequest taskRequest)
     {
-        return await _taskService.UpdateAsync(id, taskDto);
+        return await _taskService.UpdateAsync(id, taskRequest);
     }
 
     [HttpDelete("{id}")]

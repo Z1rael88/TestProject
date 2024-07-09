@@ -25,7 +25,7 @@ public class TaskSearchParamsModelBinder : IModelBinder
                 Name = name,
                 Description = description,
                 Status = status != null ? Enum.Parse<Status>(status) : null,
-                ProjectId = projectId != null ? Guid.Parse(projectId) : null  
+                ProjectId = projectId != null ? Guid.Parse(projectId) : null
             };
             bindingContext.Result = ModelBindingResult.Success(model);
         }
@@ -33,6 +33,7 @@ public class TaskSearchParamsModelBinder : IModelBinder
         {
             throw new ArgumentException(e.Message);
         }
+
         return Task.CompletedTask;
     }
 }

@@ -1,20 +1,23 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
 using Application.Mappers;
-using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
+using FluentValidation;
 
 namespace Application.Services;
 
-public class TaskService(IProjectService projectService, ITaskRepository taskRepository) : ITaskService
+public class TaskService(
+    IProjectService projectService,
+    ITaskRepository taskRepository,
+    IValidator<TaskRequest> taskValidator,
+    IValidator<CreateTaskRequest> createTaskValidator) : ITaskService
 {
     public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
     {
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
         var responses = tasks.Select(p => p.ToResponse());
-
         return responses;
     }
 
@@ -26,13 +29,14 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest taskRequest)
     {
+        await createTaskValidator.ValidateAndThrowAsync(taskRequest);
         var project = await projectService.GetByIdAsync(taskRequest.ProjectId);
         var task = new TaskModel
         {
             Name = taskRequest.Name,
             Description = taskRequest.Description,
             Status = taskRequest.Status,
-            ProjectId = project.Id
+            ProjectId = project.Id,
         };
         var createdTask = await taskRepository.CreateAsync(task);
         return createdTask.ToResponse();
@@ -45,6 +49,7 @@ public class TaskService(IProjectService projectService, ITaskRepository taskRep
 
     public async Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)
     {
+        await taskValidator.ValidateAndThrowAsync(taskRequest);
         var task = await taskRepository.GetByIdAsync(id);
         task.Name = taskRequest.Name;
         task.Description = taskRequest.Description;

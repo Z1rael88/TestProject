@@ -1,14 +1,15 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
 using Application.Mappers;
-using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
+using FluentValidation;
 
 namespace Application.Services;
 
-public class ProjectService(IProjectRepository projectRepository, ITaskRepository taskRepository) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, IValidator<ProjectRequest> projectValidator)
+    : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
@@ -25,6 +26,7 @@ public class ProjectService(IProjectRepository projectRepository, ITaskRepositor
 
     public async Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest)
     {
+        await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = new ProjectModel
         {
             Description = projectRequest.Description,
@@ -37,6 +39,7 @@ public class ProjectService(IProjectRepository projectRepository, ITaskRepositor
 
     public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
     {
+        await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = await projectRepository.GetByIdAsync(id);
         project.Name = projectRequest.Name;
         project.Description = projectRequest.Description;
@@ -46,11 +49,6 @@ public class ProjectService(IProjectRepository projectRepository, ITaskRepositor
 
     public async Task DeleteAsync(Guid id)
     {
-        var tasks = await taskRepository.GetAllAsync(new TaskSearchParams(){ProjectId = id});
-        foreach (var task in tasks)
-        {
-            await taskRepository.DeleteAsync(task.Id);
-        }
         await projectRepository.DeleteAsync(id);
     }
 }

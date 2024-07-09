@@ -1,17 +1,10 @@
-using System.ComponentModel.DataAnnotations;
-using Domain.Constants;
-
 namespace Application.Dtos.ProjectDtos;
 
-public record ProjectRequest
+public class ProjectRequest
 {
-    [Required]
-    [MaxLength(ModelLimits.NameMaxLength)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; }
 
-    [Required]
-    [MaxLength(ModelLimits.DescriptionMaxLength)]
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; set; }
 
-    [Required] public DateOnly StartDate { get; set; }
+    public DateOnly StartDate { get; set; }
 }

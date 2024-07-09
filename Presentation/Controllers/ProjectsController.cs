@@ -7,7 +7,8 @@ namespace Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectsController(IProjectService projectService) : ControllerBase
+    public class ProjectsController(IProjectService projectService)
+        : ControllerBase
     {
         private readonly IProjectService _projectService =
             projectService ?? throw new ArgumentNullException(nameof(projectService));

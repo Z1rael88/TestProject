@@ -1,7 +1,12 @@
+using System.Reflection;
 using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
+using Domain.ValidationOptions;
+using FluentValidation;
+using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Presentation.Middlewares;
@@ -29,14 +34,22 @@ public class Program
                 };
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
-
         builder.Services.AddEndpointsApiExplorer();
+        var configuration = builder.Configuration;
+        builder.Services.Configure<ProjectValidationOptions>(configuration.GetSection("ProjectValidation"));
+        builder.Services.Configure<TaskValidationOptions>(configuration.GetSection("TaskValidation"));
 
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         builder.Services.AddScoped<IProjectService, ProjectService>();
         builder.Services.AddScoped<ITaskService, TaskService>();
         builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
         builder.Services.AddScoped<ITaskRepository, TaskRepository>();
         builder.Services.AddScoped<GlobalExceptionHandler>();
+
+        builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
 
         builder.Services.AddSwaggerGen();
 

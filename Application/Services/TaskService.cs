@@ -1,6 +1,6 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
-using Application.Mappers;
+using AutoMapper;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
@@ -12,19 +12,21 @@ public class TaskService(
     IProjectService projectService,
     ITaskRepository taskRepository,
     IValidator<TaskRequest> taskValidator,
-    IValidator<CreateTaskRequest> createTaskValidator) : ITaskService
+    IValidator<CreateTaskRequest> createTaskValidator,
+    IMapper mapper) : ITaskService
 {
     public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
     {
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
-        var responses = tasks.Select(p => p.ToResponse());
+        var responses = mapper.Map<IEnumerable<TaskResponse>>(tasks);
         return responses;
     }
 
     public async Task<TaskResponse> GetByIdAsync(Guid id)
     {
         var task = await taskRepository.GetByIdAsync(id);
-        return task.ToResponse();
+        var response = mapper.Map<TaskResponse>(task);
+        return response;
     }
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest taskRequest)
@@ -39,7 +41,8 @@ public class TaskService(
             ProjectId = project.Id,
         };
         var createdTask = await taskRepository.CreateAsync(task);
-        return createdTask.ToResponse();
+        var response = mapper.Map<TaskResponse>(createdTask);
+        return response;
     }
 
     public async Task DeleteAsync(Guid id)
@@ -55,6 +58,7 @@ public class TaskService(
         task.Description = taskRequest.Description;
         task.Status = taskRequest.Status;
         var updatedTask = await taskRepository.UpdateAsync(task);
-        return updatedTask.ToResponse();
+        var response = mapper.Map<TaskResponse>(updatedTask);
+        return response;
     }
 }

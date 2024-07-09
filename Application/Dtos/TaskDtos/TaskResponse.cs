@@ -11,4 +11,5 @@ public class TaskResponse
     public string Description { get; set; }
 
     public Status Status { get; set; }
+    public Guid ProjectId { get; set; }
 }

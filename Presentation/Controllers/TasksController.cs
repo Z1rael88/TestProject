@@ -1,7 +1,6 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
 using Domain.SearchParams;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;

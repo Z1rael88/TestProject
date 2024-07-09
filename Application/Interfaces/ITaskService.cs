@@ -7,7 +7,7 @@ public interface ITaskService
 {
     Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams);
     Task<TaskResponse> GetByIdAsync(Guid id);
-    Task<TaskResponse> CreateAsync(CreateTaskRequest taskRequest);
+    Task<TaskResponse> CreateAsync(CreateTaskRequest createTaskRequest);
     Task DeleteAsync(Guid id);
-    Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest);
+    Task<TaskResponse> UpdateAsync(Guid id, UpdateTaskRequest updateTaskRequest);
 }

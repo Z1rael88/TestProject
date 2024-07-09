@@ -46,8 +46,7 @@ public class ProjectService(
     {
         await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = await projectRepository.GetByIdAsync(id);
-        project.Name = projectRequest.Name;
-        project.Description = projectRequest.Description;
+        mapper.Map(projectRequest, project);
         var updatedProject = await projectRepository.UpdateAsync(project);
         var response = mapper.Map<ProjectResponse>(updatedProject);
         return response;

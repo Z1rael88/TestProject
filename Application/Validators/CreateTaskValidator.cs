@@ -18,6 +18,6 @@ public class CreateTaskValidator : AbstractValidator<CreateTaskRequest>
             .MaximumLength(validationOptions.Value.DescriptionMaxLength)
             .WithMessage($"Description cannot exceed {validationOptions.Value.DescriptionMaxLength} characters");
         RuleFor(p => p.Status)
-            .NotEmpty().WithMessage("Status is required");
+            .NotNull().WithMessage("Status is required");
     }
 }

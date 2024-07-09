@@ -10,4 +10,5 @@ public interface ITaskRepository
     Task<TaskModel> CreateAsync(TaskModel task);
     Task<TaskModel> UpdateAsync(TaskModel task);
     Task DeleteAsync(Guid id);
+
 }

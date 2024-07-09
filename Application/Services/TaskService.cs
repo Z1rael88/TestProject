@@ -1,6 +1,7 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
 using AutoMapper;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
@@ -9,9 +10,9 @@ using FluentValidation;
 namespace Application.Services;
 
 public class TaskService(
-    IProjectService projectService,
+    IProjectRepository projectRepository,
     ITaskRepository taskRepository,
-    IValidator<TaskRequest> taskValidator,
+    IValidator<UpdateTaskRequest> taskValidator,
     IValidator<CreateTaskRequest> createTaskValidator,
     IMapper mapper) : ITaskService
 {
@@ -29,17 +30,14 @@ public class TaskService(
         return response;
     }
 
-    public async Task<TaskResponse> CreateAsync(CreateTaskRequest taskRequest)
+    public async Task<TaskResponse> CreateAsync(CreateTaskRequest createTaskRequest)
     {
-        await createTaskValidator.ValidateAndThrowAsync(taskRequest);
-        var project = await projectService.GetByIdAsync(taskRequest.ProjectId);
-        var task = new TaskModel
+        await createTaskValidator.ValidateAndThrowAsync(createTaskRequest);
+        if (!await projectRepository.IsProjectExistsAsync(createTaskRequest.ProjectId))
         {
-            Name = taskRequest.Name,
-            Description = taskRequest.Description,
-            Status = taskRequest.Status,
-            ProjectId = project.Id,
-        };
+            throw new NotFoundException($"Project with {createTaskRequest.ProjectId} not found");
+        }
+        var task = mapper.Map<TaskModel>(createTaskRequest);
         var createdTask = await taskRepository.CreateAsync(task);
         var response = mapper.Map<TaskResponse>(createdTask);
         return response;
@@ -50,13 +48,11 @@ public class TaskService(
         await taskRepository.DeleteAsync(id);
     }
 
-    public async Task<TaskResponse> UpdateAsync(Guid id, TaskRequest taskRequest)
+    public async Task<TaskResponse> UpdateAsync(Guid id, UpdateTaskRequest updateTaskRequest)
     {
-        await taskValidator.ValidateAndThrowAsync(taskRequest);
+        await taskValidator.ValidateAndThrowAsync(updateTaskRequest);
         var task = await taskRepository.GetByIdAsync(id);
-        task.Name = taskRequest.Name;
-        task.Description = taskRequest.Description;
-        task.Status = taskRequest.Status;
+        mapper.Map(updateTaskRequest, task);
         var updatedTask = await taskRepository.UpdateAsync(task);
         var response = mapper.Map<TaskResponse>(updatedTask);
         return response;

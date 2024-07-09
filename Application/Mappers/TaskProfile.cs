@@ -8,8 +8,8 @@ public class TaskProfile : Profile
 {
     public TaskProfile()
     {
-        CreateMap<TaskModel, TaskResponse>()
-            .ForMember(dest => dest.ProjectId, opt => opt.MapFrom(src => src.ProjectId))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+        CreateMap<TaskModel, TaskResponse>();
+        CreateMap<UpdateTaskRequest, TaskModel>();
+        CreateMap<CreateTaskRequest, TaskModel>();
     }
 }

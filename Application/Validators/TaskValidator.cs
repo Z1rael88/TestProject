@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace Application.Validators;
 
-public class TaskValidator : AbstractValidator<TaskRequest>
+public class TaskValidator : AbstractValidator<UpdateTaskRequest>
 {
     public TaskValidator(IOptions<TaskValidationOptions> validationOptions)
     {
@@ -17,7 +17,6 @@ public class TaskValidator : AbstractValidator<TaskRequest>
             .NotEmpty().WithMessage("Description is required")
             .MaximumLength(validationOptions.Value.DescriptionMaxLength)
             .WithMessage($"Description cannot exceed {validationOptions.Value.DescriptionMaxLength} characters");
-        RuleFor(p => p.Status)
-            .NotEmpty().WithMessage("Status is required");
+        RuleFor(p => p.Status).NotNull().WithMessage("Status is required");
     }
 }

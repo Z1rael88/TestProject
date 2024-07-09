@@ -1,5 +1,6 @@
 using System.Reflection;
 using Application.Interfaces;
+using Application.Mappers;
 using Application.Services;
 using Domain.Interfaces;
 using Domain.ValidationOptions;
@@ -34,6 +35,8 @@ public class Program
                 };
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
+        builder.Services.AddAutoMapper(typeof(ProjectProfile).Assembly);
+        builder.Services.AddAutoMapper(typeof(TaskProfile).Assembly);
         builder.Services.AddEndpointsApiExplorer();
         var configuration = builder.Configuration;
         builder.Services.Configure<ProjectValidationOptions>(configuration.GetSection("ProjectValidation"));

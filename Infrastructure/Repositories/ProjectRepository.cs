@@ -80,4 +80,8 @@ public class ProjectRepository(IApplicationDbContext dbContext) : IProjectReposi
         dbContext.Projects.Remove(project);
         await dbContext.SaveChangesAsync();
     }
+    public async Task<bool> IsProjectExistsAsync(Guid projectId)
+    {
+        return await dbContext.Projects.AnyAsync(p => p.Id == projectId);
+    }
 }

@@ -1,6 +1,6 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
-using Application.Mappers;
+using AutoMapper;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
@@ -8,20 +8,24 @@ using FluentValidation;
 
 namespace Application.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IValidator<ProjectRequest> projectValidator)
+public class ProjectService(
+    IProjectRepository projectRepository,
+    IValidator<ProjectRequest> projectValidator,
+    IMapper mapper)
     : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
         var projects = await projectRepository.GetAllAsync(projectSearchParams);
-        var responses = projects.Select(p => p.ToResponse());
+        var responses = mapper.Map<IEnumerable<ProjectResponse>>(projects);
         return responses;
     }
 
     public async Task<ProjectResponse> GetByIdAsync(Guid id)
     {
         var project = await projectRepository.GetByIdAsync(id);
-        return project.ToResponse();
+        var response = mapper.Map<ProjectResponse>(project);
+        return response;
     }
 
     public async Task<ProjectResponse> CreateAsync(ProjectRequest projectRequest)
@@ -34,17 +38,18 @@ public class ProjectService(IProjectRepository projectRepository, IValidator<Pro
             StartDate = projectRequest.StartDate,
         };
         var createdProject = await projectRepository.CreateAsync(project);
-        return createdProject.ToResponse();
+        var response = mapper.Map<ProjectResponse>(createdProject);
+        return response;
     }
 
     public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
     {
         await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = await projectRepository.GetByIdAsync(id);
-        project.Name = projectRequest.Name;
-        project.Description = projectRequest.Description;
+        mapper.Map(projectRequest, project);
         var updatedProject = await projectRepository.UpdateAsync(project);
-        return updatedProject.ToResponse();
+        var response = mapper.Map<ProjectResponse>(updatedProject);
+        return response;
     }
 
     public async Task DeleteAsync(Guid id)

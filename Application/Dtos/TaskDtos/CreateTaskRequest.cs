@@ -1,6 +1,6 @@
 namespace Application.Dtos.TaskDtos;
 
-public class CreateTaskRequest : TaskRequest
+public class CreateTaskRequest : UpdateTaskRequest
 {
     public Guid ProjectId { get; set; }
 }

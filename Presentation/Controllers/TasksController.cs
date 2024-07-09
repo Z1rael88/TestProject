@@ -31,9 +31,9 @@ public class TasksController(
     }
 
     [HttpPut("{id}")]
-    public async Task<TaskResponse> UpdateTaskAsync(Guid id, TaskRequest taskRequest)
+    public async Task<TaskResponse> UpdateTaskAsync(Guid id, UpdateTaskRequest updateTaskRequest)
     {
-        return await _taskService.UpdateAsync(id, taskRequest);
+        return await _taskService.UpdateAsync(id, updateTaskRequest);
     }
 
     [HttpDelete("{id}")]

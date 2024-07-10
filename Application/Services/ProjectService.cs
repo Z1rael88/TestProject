@@ -18,6 +18,7 @@ public class ProjectService(
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
+        logger.LogInformation("Started retrieving projects");
         var projects = await projectRepository.GetAllAsync(projectSearchParams);
         var responses = mapper.Map<IEnumerable<ProjectResponse>>(projects);
         logger.LogInformation("Successfully retrieved projects");
@@ -26,6 +27,7 @@ public class ProjectService(
 
     public async Task<ProjectResponse> GetByIdAsync(Guid id)
     {
+        logger.LogInformation("Started retrieving project");
         var project = await projectRepository.GetByIdAsync(id);
         var response = mapper.Map<ProjectResponse>(project);
         logger.LogInformation($"Successfully retrieved project with id : {project.Id}");
@@ -59,6 +61,7 @@ public class ProjectService(
 
     public async Task DeleteAsync(Guid id)
     {
+        logger.LogInformation("Started deleting projects");
         await projectRepository.DeleteAsync(id);
         logger.LogInformation($"Successfully deleted project with id : {id}");
     }

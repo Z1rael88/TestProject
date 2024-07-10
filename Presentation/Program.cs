@@ -53,6 +53,7 @@ public class Program
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<GlobalExceptionHandler>();
+            builder.Services.AddMemoryCache();
 
             builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
 

@@ -48,7 +48,7 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
 
             allProjects = allProjects.Include(p => p.Tasks);
             logger.LogInformation("Successfully retrieved projects from database");
-            return allProjects;
+            return allProjects.AsNoTracking();
         });
     }
 

@@ -33,7 +33,7 @@ public class TaskService(
         }
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
         var mappedTasks = mapper.Map<IEnumerable<TaskResponse>>(tasks);
-        var taskResponses = memoryCache.Set(cacheKey, mappedTasks, TimeSpan.FromMinutes(2));
+        var taskResponses = memoryCache.Set(cacheKey, mappedTasks, TimeSpan.FromSeconds(30));
         logger.LogInformation("Successfully retrieved projects from Service Layer");
         return taskResponses;
     }
@@ -78,7 +78,7 @@ public class TaskService(
         var updatedTask = await taskRepository.UpdateAsync(task);
         var taskResponse = mapper.Map<TaskResponse>(updatedTask);
         var cacheKey = TaskCacheKeyCreator.GetTaskCacheKey();
-        memoryCache.Set(cacheKey, taskResponse, TimeSpan.FromMinutes(2));
+        memoryCache.Set(cacheKey, taskResponse, TimeSpan.FromSeconds(30));
         logger.LogInformation($"Successfully updated task with Id : {updatedTask.Id} from Service Layer");
         return taskResponse;
     }

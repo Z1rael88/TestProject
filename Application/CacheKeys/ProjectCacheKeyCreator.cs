@@ -4,8 +4,12 @@ namespace Application.CacheKeys;
 
 public static class ProjectCacheKeyCreator
 {
-    public static string GetProjectCacheKey()
+    public static string GetCacheKeyForProject(Guid id)
     {
-        return $"project_Key";
+        return $"project_{id.GetHashCode()}";
+    }
+    public static string GetCacheKeyForAllProjects(ProjectSearchParams projectSearchParams)
+    {
+        return $"projects_{projectSearchParams.GetHashCode()}";
     }
 }

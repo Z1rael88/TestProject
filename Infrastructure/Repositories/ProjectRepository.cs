@@ -18,7 +18,7 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
             if (!string.IsNullOrEmpty(projectSearchParams.Name))
             {
                 allProjects = allProjects
-                    .Where(p => p.Name.Contains(projectSearchParams.Name, StringComparison.OrdinalIgnoreCase));
+                    .Where(p => p.Name.Contains(projectSearchParams.Name));
             }
 
             if (!string.IsNullOrEmpty(projectSearchParams.Description))

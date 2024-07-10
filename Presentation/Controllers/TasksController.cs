@@ -29,7 +29,7 @@ public class TasksController(
         logger.LogInformation($"Started retrieving task with Id : {id} from {nameof(GetAllAsync)} request");
         var response = await _taskService.GetByIdAsync(id);
         logger.LogInformation(
-            $"Successfully retrieved task with id {id} from {nameof(GetByIdAsync)} request");
+            $"Successfully retrieved task with Id : {id} from {nameof(GetByIdAsync)} request");
         return response;
     }
 
@@ -49,7 +49,7 @@ public class TasksController(
         logger.LogInformation($"Started updating task with Id : {id} from {nameof(GetAllAsync)} request");
         var response = await _taskService.UpdateAsync(id, updateTaskRequest);
         logger.LogInformation(
-            $"Successfully updated task with id {id} from {nameof(UpdateTaskAsync)} request");
+            $"Successfully updated task with Id : {id} from {nameof(UpdateTaskAsync)} request");
         return response;
     }
 
@@ -59,6 +59,6 @@ public class TasksController(
         logger.LogInformation($"Started deleting task with Id : {id} from {nameof(GetAllAsync)} request");
         await _taskService.DeleteAsync(id);
         logger.LogInformation(
-            $"Successfully deleted task with id {id} from {nameof(DeleteTaskAsync)} request");
+            $"Successfully deleted task with Id : {id} from {nameof(DeleteTaskAsync)} request");
     }
 }

@@ -38,7 +38,7 @@ public class TaskService(
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest createTaskRequest)
     {
-        logger.LogInformation($"Started creating task with Name : {createTaskRequest.Name}");
+        logger.LogInformation("Started creating task");
         await createTaskValidator.ValidateAndThrowAsync(createTaskRequest);
         if (!await projectRepository.IsProjectExistsAsync(createTaskRequest.ProjectId))
         {

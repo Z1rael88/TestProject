@@ -27,7 +27,7 @@ namespace Presentation.Controllers
         {
             logger.LogInformation($"Started retrieving project with Id : {id} from {nameof(GetAllAsync)} request");
             var response = await _projectService.GetByIdAsync(id);
-            logger.LogInformation($"Successfully retrieved project with Id {id} from {nameof(GetByIdAsync)} request");
+            logger.LogInformation($"Successfully retrieved project with Id : {id} from {nameof(GetByIdAsync)} request");
             return response;
         }
 

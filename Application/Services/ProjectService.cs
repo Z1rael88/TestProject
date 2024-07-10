@@ -21,16 +21,16 @@ public class ProjectService(
         logger.LogInformation("Started retrieving projects");
         var projects = await projectRepository.GetAllAsync(projectSearchParams);
         var responses = mapper.Map<IEnumerable<ProjectResponse>>(projects);
-        logger.LogInformation("Successfully retrieved projects");
+        logger.LogInformation("Successfully retrieved projects from Service Layer");
         return responses;
     }
 
     public async Task<ProjectResponse> GetByIdAsync(Guid id)
     {
-        logger.LogInformation("Started retrieving project");
+        logger.LogInformation($"Started retrieving project with id : {id} ");
         var project = await projectRepository.GetByIdAsync(id);
         var response = mapper.Map<ProjectResponse>(project);
-        logger.LogInformation($"Successfully retrieved project with id : {project.Id}");
+        logger.LogInformation($"Successfully retrieved project with id : {project.Id} from Service Layer");
         return response;
     }
 
@@ -42,27 +42,27 @@ public class ProjectService(
         var createdProject = await projectRepository.CreateAsync(project);
         var response = mapper.Map<ProjectResponse>(createdProject);
         logger.LogInformation(
-            $"Successfully created project with Name : {createdProject.Name} and Id : {createdProject.Id}");
+            $"Successfully created project with Name : {createdProject.Name} and Id : {createdProject.Id} from Service Layer");
         return response;
     }
 
     public async Task<ProjectResponse> UpdateAsync(Guid id, ProjectRequest projectRequest)
     {
-        logger.LogInformation($"Started updating project with Name : {projectRequest.Name}");
+        logger.LogInformation($"Started updating project with Id : {id}");
         await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = await projectRepository.GetByIdAsync(id);
         mapper.Map(projectRequest, project);
         var updatedProject = await projectRepository.UpdateAsync(project);
         var response = mapper.Map<ProjectResponse>(updatedProject);
         logger.LogInformation(
-            $"Successfully updated project with Name : {updatedProject.Name} and Id : {updatedProject.Id}");
+            $"Successfully updated project with Id : {updatedProject.Id} from Service Layer");
         return response;
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        logger.LogInformation("Started deleting projects");
+        logger.LogInformation($"Started deleting project with id : {id}");
         await projectRepository.DeleteAsync(id);
-        logger.LogInformation($"Successfully deleted project with id : {id}");
+        logger.LogInformation($"Successfully deleted project with id : {id} from Service Layer");
     }
 }

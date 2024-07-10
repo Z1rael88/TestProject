@@ -25,9 +25,9 @@ namespace Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<ProjectResponse> GetByIdAsync(Guid id)
         {
-            logger.LogInformation($"Started retrieving project from {nameof(GetAllAsync)} request");
+            logger.LogInformation($"Started retrieving project with Id : {id} from {nameof(GetAllAsync)} request");
             var response = await _projectService.GetByIdAsync(id);
-            logger.LogInformation($"Successfully retrieved project with id {id} from {nameof(GetByIdAsync)} request");
+            logger.LogInformation($"Successfully retrieved project with Id {id} from {nameof(GetByIdAsync)} request");
             return response;
         }
 
@@ -36,27 +36,28 @@ namespace Presentation.Controllers
         {
             logger.LogInformation($"Started creating project from {nameof(GetAllAsync)} request");
             var response = await _projectService.CreateAsync(projectRequest);
-            logger.LogInformation($"Successfully created project  from {nameof(CreateProjectAsync)} request");
+            logger.LogInformation(
+                $"Successfully created project with Id : {response.Id} from {nameof(CreateProjectAsync)} request");
             return response;
         }
 
         [HttpPut("{id}")]
         public async Task<ProjectResponse> UpdateProjectAsync(Guid id, ProjectRequest projectRequest)
         {
-            logger.LogInformation($"Started updating project from {nameof(GetAllAsync)} request");
+            logger.LogInformation($"Started updating project with Id : {id} from {nameof(GetAllAsync)} request");
             var response = await _projectService.UpdateAsync(id, projectRequest);
             logger.LogInformation(
-                $"Successfully updated project with id {id} from {nameof(UpdateProjectAsync)} request");
+                $"Successfully updated project with Id : {id} from {nameof(UpdateProjectAsync)} request");
             return response;
         }
 
         [HttpDelete("{id}")]
         public async Task DeleteProjectAsync(Guid id)
         {
-            logger.LogInformation($"Started deleting project from {nameof(GetAllAsync)} request");
+            logger.LogInformation($"Started deleting project with Id : {id} from {nameof(GetAllAsync)} request");
             await _projectService.DeleteAsync(id);
             logger.LogInformation(
-                $"Successfully deleted project with id {id} from {nameof(DeleteProjectAsync)} request");
+                $"Successfully deleted project with Id : {id} from {nameof(DeleteProjectAsync)} request");
         }
     }
 }

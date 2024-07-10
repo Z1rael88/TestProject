@@ -26,7 +26,7 @@ public class TasksController(
     [HttpGet("{id}")]
     public async Task<TaskResponse> GetByIdAsync(Guid id)
     {
-        logger.LogInformation($"Started retrieving task from {nameof(GetAllAsync)} request");
+        logger.LogInformation($"Started retrieving task with Id : {id} from {nameof(GetAllAsync)} request");
         var response = await _taskService.GetByIdAsync(id);
         logger.LogInformation(
             $"Successfully retrieved task with id {id} from {nameof(GetByIdAsync)} request");
@@ -39,14 +39,14 @@ public class TasksController(
         logger.LogInformation($"Started creating task from {nameof(GetAllAsync)} request");
         var response = await _taskService.CreateAsync(taskRequest);
         logger.LogInformation(
-            $"Successfully created task from {nameof(CreateTaskAsync)} request");
+            $"Successfully created task with Id : {response.Id} from {nameof(CreateTaskAsync)} request");
         return response;
     }
 
     [HttpPut("{id}")]
     public async Task<TaskResponse> UpdateTaskAsync(Guid id, UpdateTaskRequest updateTaskRequest)
     {
-        logger.LogInformation($"Started updating task from {nameof(GetAllAsync)} request");
+        logger.LogInformation($"Started updating task with Id : {id} from {nameof(GetAllAsync)} request");
         var response = await _taskService.UpdateAsync(id, updateTaskRequest);
         logger.LogInformation(
             $"Successfully updated task with id {id} from {nameof(UpdateTaskAsync)} request");
@@ -56,7 +56,7 @@ public class TasksController(
     [HttpDelete("{id}")]
     public async Task DeleteTaskAsync(Guid id)
     {
-        logger.LogInformation($"Started deleting task from {nameof(GetAllAsync)} request");
+        logger.LogInformation($"Started deleting task with Id : {id} from {nameof(GetAllAsync)} request");
         await _taskService.DeleteAsync(id);
         logger.LogInformation(
             $"Successfully deleted task with id {id} from {nameof(DeleteTaskAsync)} request");

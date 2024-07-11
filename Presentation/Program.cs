@@ -71,8 +71,8 @@ public class Program
 
             var app = builder.Build();
 
-            var initializer = app.Services.GetRequiredService<DatabaseInitializer>();
-            initializer.Initialize();
+            DatabaseInitializer.SetServiceProvider(app.Services);
+            DatabaseInitializer.Initialize();
 
             if (app.Environment.IsDevelopment())
             {

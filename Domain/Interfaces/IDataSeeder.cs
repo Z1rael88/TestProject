@@ -2,5 +2,5 @@ namespace Domain.Interfaces;
 
 public interface IDataSeeder
 {
-    void SeedData();
+    Task SeedDataAsync();
 }

@@ -18,7 +18,7 @@ namespace Presentation;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
         try
@@ -53,6 +53,7 @@ public class Program
                     "DefaultConnection");
                 options.SchemaName = "dbo";
                 options.TableName = "TestCache";
+                options.DefaultSlidingExpiration = TimeSpan.FromSeconds(30);
             });
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -71,8 +72,7 @@ public class Program
 
             var app = builder.Build();
 
-            DatabaseInitializer.SetServiceProvider(app.Services);
-            DatabaseInitializer.Initialize();
+            await DatabaseInitializer.InitializeAsync(app.Services);
 
             if (app.Environment.IsDevelopment())
             {

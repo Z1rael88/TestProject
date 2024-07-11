@@ -5,7 +5,7 @@ namespace Infrastructure.Data;
 
 public class DataSeeder(IApplicationDbContext dbContext) : IDataSeeder
 {
-    public void SeedData()
+    public async Task SeedDataAsync()
     {
         if (!dbContext.Projects.Any())
         {
@@ -15,6 +15,6 @@ public class DataSeeder(IApplicationDbContext dbContext) : IDataSeeder
                 new ProjectModel { Name = "Project 3", Description = "Third project", StartDate = DateOnly.FromDateTime(DateTime.Today) });
         }
 
-        dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 }

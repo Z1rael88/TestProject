@@ -42,7 +42,7 @@ public class TaskRepository(IApplicationDbContext dbContext, ILogger<TaskReposit
             }
 
             logger.LogInformation("Successfully retrieved tasks from database");
-            return allTasks;
+            return allTasks.AsNoTracking();
         });
     }
 

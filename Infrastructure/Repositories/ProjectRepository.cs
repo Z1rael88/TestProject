@@ -18,7 +18,7 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
             if (!string.IsNullOrEmpty(projectSearchParams.Name))
             {
                 allProjects = allProjects
-                    .Where(p => p.Name.Contains(projectSearchParams.Name, StringComparison.OrdinalIgnoreCase));
+                    .Where(p => p.Name.Contains(projectSearchParams.Name));
             }
 
             if (!string.IsNullOrEmpty(projectSearchParams.Description))
@@ -48,7 +48,7 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
 
             allProjects = allProjects.Include(p => p.Tasks);
             logger.LogInformation("Successfully retrieved projects from database");
-            return allProjects;
+            return allProjects.AsNoTracking();
         });
     }
 

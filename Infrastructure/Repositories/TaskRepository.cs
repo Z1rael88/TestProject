@@ -16,14 +16,14 @@ public class TaskRepository(IApplicationDbContext dbContext, ILogger<TaskReposit
         if (!string.IsNullOrEmpty(searchParams.Name))
         {
             allTasks = allTasks
-                .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
+                .Where(p => p.Name.Contains(searchParams.Name));
         }
 
         if (!string.IsNullOrEmpty(searchParams.Description))
         {
             allTasks = allTasks
                 .Where(
-                    p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
+                    p => p.Description.Contains(searchParams.Description));
         }
 
         if (searchParams.Status != null)

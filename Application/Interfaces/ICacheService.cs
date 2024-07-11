@@ -2,7 +2,7 @@ namespace Application.Interfaces;
 
 public interface ICacheService
 {
-    Task<T?> TryGetCacheData<T>(object key);
-    Task SetCacheData<T>(object key, T data);
-    Task RemoveCacheData<T>(object key);
+    Task<T?> TryGetCacheDataAsync<T>(object key);
+    Task SetCacheDataAsync<T>(object key, T data);
+    Task RemoveCacheDataAsync<T>(object key);
 }

@@ -18,7 +18,7 @@ namespace Presentation;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
         try
@@ -53,6 +53,7 @@ public class Program
                     "DefaultConnection");
                 options.SchemaName = "dbo";
                 options.TableName = "TestCache";
+                options.DefaultSlidingExpiration = TimeSpan.FromSeconds(30);
             });
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -60,6 +61,7 @@ public class Program
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<ICacheService, CacheService>();
+            builder.Services.AddScoped<IDataSeeder, DataSeeder>();
             builder.Services.AddScoped<GlobalExceptionHandler>();
 
             builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
@@ -69,6 +71,8 @@ public class Program
             builder.Host.UseNLog();
 
             var app = builder.Build();
+
+            await DatabaseInitializer.InitializeAsync(app.Services);
 
             if (app.Environment.IsDevelopment())
             {
@@ -91,6 +95,7 @@ public class Program
             logger.Error(ex, "Stopped program because of exception");
             throw;
         }
+
         finally
         {
             LogManager.Shutdown();

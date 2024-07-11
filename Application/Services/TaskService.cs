@@ -22,7 +22,7 @@ public class TaskService(
     public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
     {
         logger.LogInformation("Started retrieving tasks from Service Layer");
-        var cachedTasks = await cacheService.TryGetCacheData<IEnumerable<TaskResponse>>(taskSearchParams);
+        var cachedTasks = await cacheService.TryGetCacheDataAsync<IEnumerable<TaskResponse>>(taskSearchParams);
         if (cachedTasks != null)
         {
             logger.LogInformation($"Successfully retrieved tasks from cache from Service Layer");
@@ -31,7 +31,7 @@ public class TaskService(
 
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
         var mappedTasks = mapper.Map<IEnumerable<TaskResponse>>(tasks);
-
+        await cacheService.SetCacheDataAsync(taskSearchParams, mappedTasks);
         logger.LogInformation("Successfully retrieved projects from Service Layer");
         return mappedTasks;
     }
@@ -39,7 +39,7 @@ public class TaskService(
     public async Task<TaskResponse> GetByIdAsync(Guid id)
     {
         logger.LogInformation($"Started retrieving task with Id : {id} from Service Layer");
-        var cachedTask = await cacheService.TryGetCacheData<TaskResponse>(id);
+        var cachedTask = await cacheService.TryGetCacheDataAsync<TaskResponse>(id);
         if (cachedTask != null)
         {
             logger.LogInformation($"Successfully retrieved task with Id : {id} from cache from Service Layer");
@@ -48,7 +48,7 @@ public class TaskService(
 
         var task = await taskRepository.GetByIdAsync(id);
         var mappedTask = mapper.Map<TaskResponse>(task);
-        await cacheService.SetCacheData(id, mappedTask);
+        await cacheService.SetCacheDataAsync(id, mappedTask);
         logger.LogInformation($"Successfully retrieved task with Id : {task.Id} from Service Layer");
         return mappedTask;
     }
@@ -77,7 +77,7 @@ public class TaskService(
         mapper.Map(updateTaskRequest, task);
         var updatedTask = await taskRepository.UpdateAsync(task);
         var taskResponse = mapper.Map<TaskResponse>(updatedTask);
-        await cacheService.TryGetCacheData<TaskResponse>(id);
+        await cacheService.TryGetCacheDataAsync<TaskResponse>(id);
         logger.LogInformation($"Successfully updated task with Id : {updatedTask.Id} from Service Layer");
         return taskResponse;
     }
@@ -86,7 +86,7 @@ public class TaskService(
     {
         logger.LogInformation($"Started deleting task with Id : {id} from Service Layer");
         await taskRepository.DeleteAsync(id);
-        await cacheService.RemoveCacheData<TaskResponse>(id);
+        await cacheService.RemoveCacheDataAsync<TaskResponse>(id);
         logger.LogInformation($"Successfully deleted task with Id : {id} from Service Layer");
     }
 }

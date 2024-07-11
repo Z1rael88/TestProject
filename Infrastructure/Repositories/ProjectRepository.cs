@@ -23,8 +23,7 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
         if (!string.IsNullOrEmpty(projectSearchParams.Description))
         {
             allProjects = allProjects
-                .Where(p => p.Description.Contains(projectSearchParams.Description,
-                    StringComparison.OrdinalIgnoreCase));
+                .Where(p => p.Description.Contains(projectSearchParams.Description));
         }
 
         if (projectSearchParams.StartDate.HasValue)

@@ -12,44 +12,42 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
     public async Task<IEnumerable<ProjectModel>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
         logger.LogInformation("Started retrieving projects from database");
-        return await Task.Run(() =>
+
+        var allProjects = dbContext.Projects.AsQueryable();
+        if (!string.IsNullOrEmpty(projectSearchParams.Name))
         {
-            var allProjects = dbContext.Projects.AsQueryable();
-            if (!string.IsNullOrEmpty(projectSearchParams.Name))
-            {
-                allProjects = allProjects
-                    .Where(p => p.Name.Contains(projectSearchParams.Name));
-            }
+            allProjects = allProjects
+                .Where(p => p.Name.Contains(projectSearchParams.Name));
+        }
 
-            if (!string.IsNullOrEmpty(projectSearchParams.Description))
-            {
-                allProjects = allProjects
-                    .Where(p => p.Description.Contains(projectSearchParams.Description,
-                        StringComparison.OrdinalIgnoreCase));
-            }
+        if (!string.IsNullOrEmpty(projectSearchParams.Description))
+        {
+            allProjects = allProjects
+                .Where(p => p.Description.Contains(projectSearchParams.Description,
+                    StringComparison.OrdinalIgnoreCase));
+        }
 
-            if (projectSearchParams.StartDate.HasValue)
-            {
-                allProjects = allProjects
-                    .Where(p => p.StartDate == projectSearchParams.StartDate.Value);
-            }
+        if (projectSearchParams.StartDate.HasValue)
+        {
+            allProjects = allProjects
+                .Where(p => p.StartDate == projectSearchParams.StartDate.Value);
+        }
 
-            if (projectSearchParams.StartDateFrom.HasValue)
-            {
-                allProjects = allProjects
-                    .Where(p => p.StartDate >= projectSearchParams.StartDateFrom.Value);
-            }
+        if (projectSearchParams.StartDateFrom.HasValue)
+        {
+            allProjects = allProjects
+                .Where(p => p.StartDate >= projectSearchParams.StartDateFrom.Value);
+        }
 
-            if (projectSearchParams.StartDateTo.HasValue)
-            {
-                allProjects = allProjects
-                    .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
-            }
+        if (projectSearchParams.StartDateTo.HasValue)
+        {
+            allProjects = allProjects
+                .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
+        }
 
-            allProjects = allProjects.Include(p => p.Tasks);
-            logger.LogInformation("Successfully retrieved projects from database");
-            return allProjects.AsNoTracking();
-        });
+        allProjects = allProjects.Include(p => p.Tasks);
+        logger.LogInformation("Successfully retrieved projects from database");
+        return await allProjects.AsNoTracking().ToListAsync();
     }
 
     public async Task<ProjectModel> GetByIdAsync(Guid id)

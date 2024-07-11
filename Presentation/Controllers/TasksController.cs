@@ -14,7 +14,7 @@ public class TasksController(
     private readonly ITaskService _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
 
     [HttpGet]
-    public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
+    public async Task<IEnumerable<TaskResponse>> GetAllAsync([FromQuery]TaskSearchParams taskSearchParams)
     {
         logger.LogInformation($"Started retrieving tasks from {nameof(GetAllAsync)} request");
         var responses = await _taskService.GetAllAsync(taskSearchParams);

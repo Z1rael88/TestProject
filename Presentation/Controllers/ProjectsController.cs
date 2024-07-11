@@ -14,7 +14,7 @@ namespace Presentation.Controllers
             projectService ?? throw new ArgumentNullException(nameof(projectService));
 
         [HttpGet]
-        public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
+        public async Task<IEnumerable<ProjectResponse>> GetAllAsync([FromQuery]ProjectSearchParams projectSearchParams)
         {
             logger.LogInformation($"Started retrieving projects from {nameof(GetAllAsync)} request");
             var responses = await _projectService.GetAllAsync(projectSearchParams);

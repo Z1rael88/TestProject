@@ -4,7 +4,6 @@ using Domain.Models;
 using Domain.SearchParams;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NLog;
 
 namespace Infrastructure.Repositories;
 
@@ -13,37 +12,34 @@ public class TaskRepository(IApplicationDbContext dbContext, ILogger<TaskReposit
     public async Task<IEnumerable<TaskModel>> GetAllAsync(TaskSearchParams searchParams)
     {
         logger.LogInformation("Started retrieving tasks from database");
-        return await Task.Run(() =>
+        var allTasks = dbContext.Tasks.AsQueryable();
+        if (!string.IsNullOrEmpty(searchParams.Name))
         {
-            var allTasks = dbContext.Tasks.AsQueryable();
-            if (!string.IsNullOrEmpty(searchParams.Name))
-            {
-                allTasks = allTasks
-                    .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
-            }
+            allTasks = allTasks
+                .Where(p => p.Name.Contains(searchParams.Name, StringComparison.OrdinalIgnoreCase));
+        }
 
-            if (!string.IsNullOrEmpty(searchParams.Description))
-            {
-                allTasks = allTasks
-                    .Where(
-                        p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
-            }
+        if (!string.IsNullOrEmpty(searchParams.Description))
+        {
+            allTasks = allTasks
+                .Where(
+                    p => p.Description.Contains(searchParams.Description, StringComparison.OrdinalIgnoreCase));
+        }
 
-            if (searchParams.Status != null)
-            {
-                allTasks = allTasks
-                    .Where(p => p.Status == searchParams.Status);
-            }
+        if (searchParams.Status != null)
+        {
+            allTasks = allTasks
+                .Where(p => p.Status == searchParams.Status);
+        }
 
-            if (searchParams.ProjectId != null)
-            {
-                allTasks = allTasks
-                    .Where(p => p.ProjectId == searchParams.ProjectId);
-            }
+        if (searchParams.ProjectId != null)
+        {
+            allTasks = allTasks
+                .Where(p => p.ProjectId == searchParams.ProjectId);
+        }
 
-            logger.LogInformation("Successfully retrieved tasks from database");
-            return allTasks.AsNoTracking();
-        });
+        logger.LogInformation("Successfully retrieved tasks from database");
+        return await allTasks.AsNoTracking().ToListAsync();
     }
 
     public async Task<TaskModel> GetByIdAsync(Guid id)

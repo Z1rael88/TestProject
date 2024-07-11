@@ -31,7 +31,7 @@ public class TaskService(
 
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
         var mappedTasks = mapper.Map<IEnumerable<TaskResponse>>(tasks);
-
+        await cacheService.SetCacheData(taskSearchParams, mappedTasks);
         logger.LogInformation("Successfully retrieved projects from Service Layer");
         return mappedTasks;
     }

@@ -60,6 +60,7 @@ public class Program
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<ICacheService, CacheService>();
+            builder.Services.AddScoped<IDataSeeder, DataSeeder>();
             builder.Services.AddScoped<GlobalExceptionHandler>();
 
             builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
@@ -70,6 +71,11 @@ public class Program
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetRequiredService<IDataSeeder>();
+                seeder.SeedData();
+            }
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -91,6 +97,7 @@ public class Program
             logger.Error(ex, "Stopped program because of exception");
             throw;
         }
+
         finally
         {
             LogManager.Shutdown();

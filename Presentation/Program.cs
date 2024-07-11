@@ -54,7 +54,6 @@ public class Program
                 options.SchemaName = "dbo";
                 options.TableName = "TestCache";
             });
-            builder.Services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
             builder.Services.AddScoped<ITaskService, TaskService>();
@@ -72,7 +71,7 @@ public class Program
 
             var app = builder.Build();
 
-            var initializer = app.Services.GetRequiredService<IDatabaseInitializer>();
+            var initializer = app.Services.GetRequiredService<DatabaseInitializer>();
             initializer.Initialize();
 
             if (app.Environment.IsDevelopment())

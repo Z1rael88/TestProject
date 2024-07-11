@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Data;
 
-public class DatabaseInitializer(IServiceProvider serviceProvider) : IDatabaseInitializer
+public class DatabaseInitializer(IServiceProvider serviceProvider)
 {
     public void Initialize()
     {

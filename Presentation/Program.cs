@@ -47,14 +47,20 @@ public class Program
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = builder.Configuration.GetConnectionString(
+                    "DefaultConnection");
+                options.SchemaName = "dbo";
+                options.TableName = "TestCache";
+            });
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
             builder.Services.AddScoped<ITaskService, TaskService>();
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-            builder.Services.AddScoped<IProjectCacheService, ProjectCacheService>();
+            builder.Services.AddScoped<ICacheService, CacheService>();
             builder.Services.AddScoped<GlobalExceptionHandler>();
-            builder.Services.AddMemoryCache();
 
             builder.Services.AddValidatorsFromAssembly(Assembly.Load("Application"));
 

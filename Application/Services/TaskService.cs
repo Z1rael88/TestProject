@@ -1,4 +1,3 @@
-using Application.CacheKeys;
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
 using AutoMapper;
@@ -7,7 +6,6 @@ using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
 using FluentValidation;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
@@ -19,38 +17,40 @@ public class TaskService(
     IValidator<CreateTaskRequest> createTaskValidator,
     IMapper mapper,
     ILogger<TaskService> logger,
-    IMemoryCache memoryCache) : ITaskService
+    ICacheService cacheService) : ITaskService
 {
     public async Task<IEnumerable<TaskResponse>> GetAllAsync(TaskSearchParams taskSearchParams)
     {
-        var cacheKey = TaskCacheKeyCreator.GetTaskCacheKey();
         logger.LogInformation("Started retrieving tasks from Service Layer");
-        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<TaskResponse>? cachedTaskResponses) &&
-            cachedTaskResponses != null)
+        var cachedTasks = await cacheService.TryGetCacheData<IEnumerable<TaskResponse>>(taskSearchParams);
+        if (cachedTasks != null)
         {
-            logger.LogInformation("Successfully retrieved tasks from cache from Service Layer");
-            return cachedTaskResponses;
+            logger.LogInformation($"Successfully retrieved tasks from cache from Service Layer");
+            return cachedTasks;
         }
+
         var tasks = await taskRepository.GetAllAsync(taskSearchParams);
         var mappedTasks = mapper.Map<IEnumerable<TaskResponse>>(tasks);
-        var taskResponses = memoryCache.Set(cacheKey, mappedTasks, TimeSpan.FromSeconds(30));
+
         logger.LogInformation("Successfully retrieved projects from Service Layer");
-        return taskResponses;
+        return mappedTasks;
     }
 
     public async Task<TaskResponse> GetByIdAsync(Guid id)
     {
-        var cacheKey = TaskCacheKeyCreator.GetTaskCacheKey();
         logger.LogInformation($"Started retrieving task with Id : {id} from Service Layer");
-        if (memoryCache.TryGetValue(cacheKey, out TaskResponse? cachedTaskResponse) && cachedTaskResponse != null)
+        var cachedTask = await cacheService.TryGetCacheData<TaskResponse>(id);
+        if (cachedTask != null)
         {
-            logger.LogInformation("Successfully retrieved tasks from cache from Service Layer");
-            return cachedTaskResponse;
+            logger.LogInformation($"Successfully retrieved task with Id : {id} from cache from Service Layer");
+            return cachedTask;
         }
+
         var task = await taskRepository.GetByIdAsync(id);
-        var taskResponse = mapper.Map<TaskResponse>(task);
+        var mappedTask = mapper.Map<TaskResponse>(task);
+        await cacheService.SetCacheData(id, mappedTask);
         logger.LogInformation($"Successfully retrieved task with Id : {task.Id} from Service Layer");
-        return taskResponse;
+        return mappedTask;
     }
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest createTaskRequest)
@@ -77,18 +77,16 @@ public class TaskService(
         mapper.Map(updateTaskRequest, task);
         var updatedTask = await taskRepository.UpdateAsync(task);
         var taskResponse = mapper.Map<TaskResponse>(updatedTask);
-        var cacheKey = TaskCacheKeyCreator.GetTaskCacheKey();
-        memoryCache.Set(cacheKey, taskResponse, TimeSpan.FromSeconds(30));
+        await cacheService.TryGetCacheData<TaskResponse>(id);
         logger.LogInformation($"Successfully updated task with Id : {updatedTask.Id} from Service Layer");
         return taskResponse;
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        var cacheKey = TaskCacheKeyCreator.GetTaskCacheKey();
         logger.LogInformation($"Started deleting task with Id : {id} from Service Layer");
         await taskRepository.DeleteAsync(id);
-        memoryCache.Remove(cacheKey);
+        await cacheService.RemoveCacheData<TaskResponse>(id);
         logger.LogInformation($"Successfully deleted task with Id : {id} from Service Layer");
     }
 }

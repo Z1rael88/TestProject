@@ -52,6 +52,7 @@ public class Program
             builder.Services.AddScoped<ITaskService, TaskService>();
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped<IProjectCacheService, ProjectCacheService>();
             builder.Services.AddScoped<GlobalExceptionHandler>();
             builder.Services.AddMemoryCache();
 

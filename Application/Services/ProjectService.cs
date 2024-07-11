@@ -1,3 +1,4 @@
+using System.Collections;
 using Application.CacheKeys;
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
@@ -6,7 +7,6 @@ using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
 using FluentValidation;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
@@ -16,23 +16,21 @@ public class ProjectService(
     IValidator<ProjectRequest> projectValidator,
     IMapper mapper,
     ILogger<ProjectService> logger,
-    IMemoryCache memoryCache)
+    IProjectCacheService projectCacheService)
     : IProjectService
 {
     public async Task<IEnumerable<ProjectResponse>> GetAllAsync(ProjectSearchParams projectSearchParams)
     {
         var cacheKey = ProjectCacheKeyCreator.GetCacheKeyForAllProjects(projectSearchParams);
         logger.LogInformation("Started retrieving projects from Service Layer");
-        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<ProjectResponse>? cachedProjectResponses) &&
-            cachedProjectResponses != null)
-        {
-            logger.LogInformation("Successfully retrieved projects from cache from Service Layer");
-            return cachedProjectResponses;
-        }
-
+        var cachedProjects = await projectCacheService.TryGetProjectOrProjects<IEnumerable<ProjectResponse>>(cacheKey);
+        if (cachedProjects != null)
+            return cachedProjects;
+        logger.LogInformation("Successfully retrieved projects from cache from Service Layer");
         var projects = await projectRepository.GetAllAsync(projectSearchParams);
         var mappedProjects = mapper.Map<IEnumerable<ProjectResponse>>(projects);
-        var projectResponses = memoryCache.Set(cacheKey, mappedProjects, TimeSpan.FromSeconds(30));
+        var projectResponses =
+            await projectCacheService.SetCacheForProjects(cacheKey, mappedProjects, TimeSpan.FromSeconds(30));
         logger.LogInformation("Successfully retrieved projects from Service Layer");
         return projectResponses;
     }
@@ -41,16 +39,14 @@ public class ProjectService(
     {
         var cacheKey = ProjectCacheKeyCreator.GetCacheKeyForProject(id);
         logger.LogInformation($"Started retrieving project with Id : {id} from Service Layer");
-        if (memoryCache.TryGetValue(cacheKey, out ProjectResponse? cachedProjectResponse) &&
-            cachedProjectResponse != null)
-        {
-            logger.LogInformation("Successfully retrieved projects from cache from Service Layer");
-            return cachedProjectResponse;
-        }
-
+        var cachedProject = await projectCacheService.TryGetProjectOrProjects<ProjectResponse>(cacheKey);
+        if (cachedProject != null)
+            return cachedProject;
+        logger.LogInformation($"Successfully retrieved project with Id : {id} from cache from Service Layer");
         var project = await projectRepository.GetByIdAsync(id);
         var mappedProject = mapper.Map<ProjectResponse>(project);
-        var projectResponse = memoryCache.Set(cacheKey, mappedProject, TimeSpan.FromSeconds(30));
+        var projectResponse =
+            await projectCacheService.SetCacheForProject(cacheKey, mappedProject, TimeSpan.FromSeconds(30));
         logger.LogInformation($"Successfully retrieved project with Id : {project.Id} from Service Layer");
         return projectResponse;
     }
@@ -76,7 +72,7 @@ public class ProjectService(
         var updatedProject = await projectRepository.UpdateAsync(project);
         var projectResponse = mapper.Map<ProjectResponse>(updatedProject);
         var cacheKey = TaskCacheKeyCreator.GetTaskCacheKey();
-        memoryCache.Set(cacheKey, projectResponse, TimeSpan.FromSeconds(30));
+        await projectCacheService.SetCacheForProject(cacheKey, projectResponse, TimeSpan.FromSeconds(30));
         logger.LogInformation(
             $"Successfully updated project with Id : {updatedProject.Id} from Service Layer");
         return projectResponse;
@@ -87,7 +83,7 @@ public class ProjectService(
         var cacheKey = ProjectCacheKeyCreator.GetCacheKeyForProject(id);
         logger.LogInformation($"Started deleting project with Id : {id} from Service Layer");
         await projectRepository.DeleteAsync(id);
-        memoryCache.Remove(cacheKey);
+        await projectCacheService.RemoveCacheFromProject(cacheKey);
         logger.LogInformation($"Successfully deleted project with Id : {id} from Service Layer");
     }
 }

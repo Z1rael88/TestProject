@@ -9,7 +9,7 @@ namespace Application.Specification;
 public class ProjectWithTasksSpecifications : BaseSpecification<ProjectModel>
 {
     public ProjectWithTasksSpecifications(ProjectSearchParams projectSearchParams)
-    : base(BuildCriteria(projectSearchParams))
+        : base(BuildCriteria(projectSearchParams))
     {
         AddInclude(project => project.Tasks);
     }
@@ -27,6 +27,7 @@ public class ProjectWithTasksSpecifications : BaseSpecification<ProjectModel>
         {
             criteria = criteria.AndAlso(x => x.Description.Contains(projectSearchParams.Description));
         }
+
         if (projectSearchParams.StartDate.HasValue)
         {
             criteria = criteria.AndAlso(x => x.StartDate == projectSearchParams.StartDate);

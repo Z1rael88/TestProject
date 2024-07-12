@@ -22,7 +22,7 @@ public class ApplicationDbContext(
         modelBuilder.ApplyConfiguration(new ProjectConfiguration(projectValidationOptions.Value));
         modelBuilder.ApplyConfiguration(new TaskConfiguration(taskValidationOptions.Value));
     }
-    public DbSet<TEntity> GetTable<TEntity>() where TEntity : BaseModel
+    public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : BaseModel
     {
         return base.Set<TEntity>();
     }

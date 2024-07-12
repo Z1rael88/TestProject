@@ -8,5 +8,5 @@ public interface IApplicationDbContext
     DbSet<ProjectModel> Projects { get; set; }
     DbSet<TaskModel> Tasks { get; set; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    DbSet<TEntity> GetTable<TEntity>() where TEntity : BaseModel;
+    DbSet<TEntity> GetDbSet<TEntity>() where TEntity : BaseModel;
 }

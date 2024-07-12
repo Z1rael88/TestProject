@@ -1,5 +1,6 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
+using Application.Specification;
 using AutoMapper;
 using Domain.Interfaces;
 using Domain.Models;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Application.Services;
 
 public class ProjectService(
-    IProjectRepository projectRepository,
+    IRepository<ProjectModel> repository,
     IValidator<ProjectRequest> projectValidator,
     IMapper mapper,
     ILogger<ProjectService> logger,
@@ -27,7 +28,7 @@ public class ProjectService(
             return cachedProjects;
         }
 
-        var projects = await projectRepository.GetAllAsync(projectSearchParams);
+        var projects = await repository.GetAllAsync(new ProjectWithTasksSpecifications(projectSearchParams));
         var mappedProjects = mapper.Map<IEnumerable<ProjectResponse>>(projects);
         await cacheService.SetCacheDataAsync(projectSearchParams, mappedProjects);
         logger.LogInformation("Successfully retrieved projects from Service Layer");
@@ -44,7 +45,7 @@ public class ProjectService(
             return cachedProject;
         }
 
-        var project = await projectRepository.GetByIdAsync(id);
+        var project = await repository.GetByIdAsync(id);
         var mappedProject = mapper.Map<ProjectResponse>(project);
         await cacheService.SetCacheDataAsync(id, mappedProject);
         logger.LogInformation($"Successfully retrieved project with Id : {project.Id} from Service Layer");
@@ -56,7 +57,7 @@ public class ProjectService(
         logger.LogInformation("Started creating project from Service Layer");
         await projectValidator.ValidateAndThrowAsync(projectRequest);
         var project = mapper.Map<ProjectModel>(projectRequest);
-        var createdProject = await projectRepository.CreateAsync(project);
+        var createdProject = await repository.CreateAsync(project);
         var projectResponse = mapper.Map<ProjectResponse>(createdProject);
         logger.LogInformation(
             $"Successfully created project with Id : {createdProject.Id} from Service Layer");
@@ -67,9 +68,9 @@ public class ProjectService(
     {
         logger.LogInformation($"Started updating project with Id : {id} from Service Layer");
         await projectValidator.ValidateAndThrowAsync(projectRequest);
-        var project = await projectRepository.GetByIdAsync(id);
+        var project = await repository.GetByIdAsync(id);
         mapper.Map(projectRequest, project);
-        var updatedProject = await projectRepository.UpdateAsync(project);
+        var updatedProject = await repository.UpdateAsync(project);
         var projectResponse = mapper.Map<ProjectResponse>(updatedProject);
         await cacheService.SetCacheDataAsync(id, projectResponse);
         logger.LogInformation(
@@ -80,7 +81,7 @@ public class ProjectService(
     public async Task DeleteAsync(Guid id)
     {
         logger.LogInformation($"Started deleting project with Id : {id} from Service Layer");
-        await projectRepository.DeleteAsync(id);
+        await repository.DeleteAsync(id);
         await cacheService.RemoveCacheDataAsync<ProjectResponse>(id);
         logger.LogInformation($"Successfully deleted project with Id : {id} from Service Layer");
     }

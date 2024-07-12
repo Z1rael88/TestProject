@@ -7,7 +7,7 @@ namespace Application.Validators;
 
 public class CreateTaskValidator : AbstractValidator<CreateTaskRequest>
 {
-    public CreateTaskValidator( IOptions<TaskValidationOptions> validationOptions)
+    public CreateTaskValidator(IOptions<TaskValidationOptions> validationOptions)
     {
         Include(new TaskValidator(validationOptions));
         RuleFor(p => p.ProjectId)

@@ -58,8 +58,7 @@ public class Program
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
             builder.Services.AddScoped<ITaskService, TaskService>();
-            builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<ICacheService, CacheService>();
             builder.Services.AddScoped<IDataSeeder, DataSeeder>();
             builder.Services.AddScoped<GlobalExceptionHandler>();

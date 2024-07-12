@@ -1,5 +1,6 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
+using Application.Specification;
 using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -11,8 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace Application.Services;
 
 public class TaskService(
-    IProjectRepository projectRepository,
-    ITaskRepository taskRepository,
+    IRepository<TaskModel> repository,
     IValidator<BaseTaskRequest> taskValidator,
     IValidator<CreateTaskRequest> createTaskValidator,
     IMapper mapper,
@@ -29,7 +29,7 @@ public class TaskService(
             return cachedTasks;
         }
 
-        var tasks = await taskRepository.GetAllAsync(taskSearchParams);
+        var tasks = await repository.GetAllAsync(new TaskSpecification(taskSearchParams));
         var mappedTasks = mapper.Map<IEnumerable<TaskResponse>>(tasks);
         await cacheService.SetCacheDataAsync(taskSearchParams, mappedTasks);
         logger.LogInformation("Successfully retrieved projects from Service Layer");
@@ -46,7 +46,7 @@ public class TaskService(
             return cachedTask;
         }
 
-        var task = await taskRepository.GetByIdAsync(id);
+        var task = await repository.GetByIdAsync(id);
         var mappedTask = mapper.Map<TaskResponse>(task);
         await cacheService.SetCacheDataAsync(id, mappedTask);
         logger.LogInformation($"Successfully retrieved task with Id : {task.Id} from Service Layer");
@@ -57,13 +57,13 @@ public class TaskService(
     {
         logger.LogInformation("Started creating task from Service Layer");
         await createTaskValidator.ValidateAndThrowAsync(createTaskRequest);
-        if (!await projectRepository.IsProjectExistsAsync(createTaskRequest.ProjectId))
+        if (!await repository.IsEntityExistsAsync(createTaskRequest.ProjectId))
         {
             throw new NotFoundException($"Project with {createTaskRequest.ProjectId} not found");
         }
 
         var task = mapper.Map<TaskModel>(createTaskRequest);
-        var createdTask = await taskRepository.CreateAsync(task);
+        var createdTask = await repository.CreateAsync(task);
         var taskResponse = mapper.Map<TaskResponse>(createdTask);
         logger.LogInformation($"Successfully created task with Id : {createdTask.Id} from Service Layer");
         return taskResponse;
@@ -73,9 +73,9 @@ public class TaskService(
     {
         logger.LogInformation($"Started updating task with Id : {id} from Service Layer");
         await taskValidator.ValidateAndThrowAsync(updateTaskRequest);
-        var task = await taskRepository.GetByIdAsync(id);
+        var task = await repository.GetByIdAsync(id);
         mapper.Map(updateTaskRequest, task);
-        var updatedTask = await taskRepository.UpdateAsync(task);
+        var updatedTask = await repository.UpdateAsync(task);
         var taskResponse = mapper.Map<TaskResponse>(updatedTask);
         await cacheService.TryGetCacheDataAsync<TaskResponse>(id);
         logger.LogInformation($"Successfully updated task with Id : {updatedTask.Id} from Service Layer");
@@ -85,7 +85,7 @@ public class TaskService(
     public async Task DeleteAsync(Guid id)
     {
         logger.LogInformation($"Started deleting task with Id : {id} from Service Layer");
-        await taskRepository.DeleteAsync(id);
+        await repository.DeleteAsync(id);
         await cacheService.RemoveCacheDataAsync<TaskResponse>(id);
         logger.LogInformation($"Successfully deleted task with Id : {id} from Service Layer");
     }

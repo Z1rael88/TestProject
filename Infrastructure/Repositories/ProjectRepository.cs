@@ -2,6 +2,7 @@ using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Domain.SearchParams;
+using Infrastructure.Specification;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -14,45 +15,34 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
         logger.LogInformation("Started retrieving projects from database");
 
         var allProjects = dbContext.Projects.AsQueryable();
-        if (!string.IsNullOrEmpty(projectSearchParams.Name))
-        {
-            allProjects = allProjects
-                .Where(p => p.Name.Contains(projectSearchParams.Name));
-        }
 
         if (!string.IsNullOrEmpty(projectSearchParams.Description))
         {
-            allProjects = allProjects
-                .Where(p => p.Description.Contains(projectSearchParams.Description));
+            var descriptionSpec = new ProjectByDescriptionSpecification(projectSearchParams.Description);
+            allProjects = ApplySpecification(descriptionSpec);
+        }
+
+        if (!string.IsNullOrEmpty(projectSearchParams.Name))
+        {
+            var nameSpec = new ProjectByNameSpecification(projectSearchParams.Name);
+            allProjects = ApplySpecification(nameSpec);
         }
 
         if (projectSearchParams.StartDate.HasValue)
         {
-            allProjects = allProjects
-                .Where(p => p.StartDate == projectSearchParams.StartDate.Value);
+            var startDateSpec = new ProjectByStartDateSpecification(projectSearchParams.StartDate);
+            allProjects = ApplySpecification(startDateSpec);
         }
 
-        if (projectSearchParams.StartDateFrom.HasValue)
-        {
-            allProjects = allProjects
-                .Where(p => p.StartDate >= projectSearchParams.StartDateFrom.Value);
-        }
-
-        if (projectSearchParams.StartDateTo.HasValue)
-        {
-            allProjects = allProjects
-                .Where(p => p.StartDate <= projectSearchParams.StartDateTo.Value);
-        }
-
-        allProjects = allProjects.Include(p => p.Tasks);
         logger.LogInformation("Successfully retrieved projects from database");
-        return await allProjects.AsNoTracking().ToListAsync();
+
+        return await allProjects.ToListAsync();
     }
 
     public async Task<ProjectModel> GetByIdAsync(Guid id)
     {
         logger.LogInformation("Started retrieving project from database");
-        var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        var project = await ApplySpecification(new ProjectsByIdWithTasksSpecification(id)).FirstOrDefaultAsync();
         if (project == null)
         {
             throw new NotFoundException($"Project with {id} not found");
@@ -61,6 +51,21 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
         logger.LogInformation("Successfully retrieved project from database");
         return project;
     }
+
+    private IQueryable<ProjectModel> ApplySpecification(BaseSpecification<ProjectModel> specification)
+    {
+        return SpecificationEvaluator.GetQuery(dbContext.Set<ProjectModel>(), specification);
+    }
+
+    /*private IQueryable<ProjectModel> ApplySpecifications(IEnumerable<BaseSpecification<ProjectModel>> specifications)
+    {
+        foreach (var specification in specifications)
+        {
+            return SpecificationEvaluator
+        }
+
+        return query;
+    }*/
 
     public async Task<ProjectModel> CreateAsync(ProjectModel project)
     {

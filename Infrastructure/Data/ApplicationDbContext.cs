@@ -22,4 +22,8 @@ public class ApplicationDbContext(
         modelBuilder.ApplyConfiguration(new ProjectConfiguration(projectValidationOptions.Value));
         modelBuilder.ApplyConfiguration(new TaskConfiguration(taskValidationOptions.Value));
     }
+    public DbSet<TEntity> Set<TEntity>() where TEntity : class
+    {
+        return base.Set<TEntity>();
+    }
 }

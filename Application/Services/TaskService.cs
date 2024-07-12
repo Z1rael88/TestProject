@@ -1,5 +1,6 @@
 using Application.Dtos.TaskDtos;
 using Application.Interfaces;
+using Application.Specification;
 using AutoMapper;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -11,8 +12,8 @@ using Microsoft.Extensions.Logging;
 namespace Application.Services;
 
 public class TaskService(
-    IProjectRepository projectRepository,
-    ITaskRepository taskRepository,
+    IRepository<TaskModel> taskRepository,
+    IRepository<ProjectModel> projectRepository,
     IValidator<BaseTaskRequest> taskValidator,
     IValidator<CreateTaskRequest> createTaskValidator,
     IMapper mapper,
@@ -29,7 +30,7 @@ public class TaskService(
             return cachedTasks;
         }
 
-        var tasks = await taskRepository.GetAllAsync(taskSearchParams);
+        var tasks = await taskRepository.GetAllAsync(new TaskSpecification(taskSearchParams));
         var mappedTasks = mapper.Map<IEnumerable<TaskResponse>>(tasks);
         await cacheService.SetCacheDataAsync(taskSearchParams, mappedTasks);
         logger.LogInformation("Successfully retrieved projects from Service Layer");
@@ -57,7 +58,7 @@ public class TaskService(
     {
         logger.LogInformation("Started creating task from Service Layer");
         await createTaskValidator.ValidateAndThrowAsync(createTaskRequest);
-        if (!await projectRepository.IsProjectExistsAsync(createTaskRequest.ProjectId))
+        if (!await projectRepository.IsEntityExistsAsync(createTaskRequest.ProjectId))
         {
             throw new NotFoundException($"Project with {createTaskRequest.ProjectId} not found");
         }

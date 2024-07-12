@@ -1,5 +1,6 @@
 using Application.Dtos.ProjectDtos;
 using Application.Interfaces;
+using Application.Specification;
 using AutoMapper;
 using Domain.Interfaces;
 using Domain.Models;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Application.Services;
 
 public class ProjectService(
-    IProjectRepository projectRepository,
+    IRepository<ProjectModel> projectRepository,
     IValidator<ProjectRequest> projectValidator,
     IMapper mapper,
     ILogger<ProjectService> logger,
@@ -27,7 +28,7 @@ public class ProjectService(
             return cachedProjects;
         }
 
-        var projects = await projectRepository.GetAllAsync(projectSearchParams);
+        var projects = await projectRepository.GetAllAsync(new ProjectWithTasksSpecifications(projectSearchParams));
         var mappedProjects = mapper.Map<IEnumerable<ProjectResponse>>(projects);
         await cacheService.SetCacheDataAsync(projectSearchParams, mappedProjects);
         logger.LogInformation("Successfully retrieved projects from Service Layer");

@@ -14,7 +14,7 @@ public class TasksController(
     private readonly ITaskService _taskService = taskService ?? throw new ArgumentNullException(nameof(taskService));
 
     [HttpGet]
-    public async Task<IEnumerable<TaskResponse>> GetAllAsync([FromQuery]TaskSearchParams taskSearchParams)
+    public async Task<IEnumerable<TaskResponse>> GetAllAsync([FromQuery] TaskSearchParams taskSearchParams)
     {
         logger.LogInformation($"Started retrieving tasks from {nameof(GetAllAsync)} request");
         var responses = await _taskService.GetAllAsync(taskSearchParams);
@@ -44,7 +44,7 @@ public class TasksController(
     }
 
     [HttpPut("{id}")]
-    public async Task<TaskResponse> UpdateTaskAsync(Guid id, UpdateTaskRequest updateTaskRequest)
+    public async Task<TaskResponse> UpdateTaskAsync(Guid id, BaseTaskRequest updateTaskRequest)
     {
         logger.LogInformation($"Started updating task with Id : {id} from {nameof(GetAllAsync)} request");
         var response = await _taskService.UpdateAsync(id, updateTaskRequest);

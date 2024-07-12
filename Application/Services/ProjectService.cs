@@ -71,7 +71,7 @@ public class ProjectService(
         mapper.Map(projectRequest, project);
         var updatedProject = await projectRepository.UpdateAsync(project);
         var projectResponse = mapper.Map<ProjectResponse>(updatedProject);
-        cacheService.SetCacheDataAsync(id, projectResponse);
+        await cacheService.SetCacheDataAsync(id, projectResponse);
         logger.LogInformation(
             $"Successfully updated project with Id : {updatedProject.Id} from Service Layer");
         return projectResponse;
@@ -81,7 +81,7 @@ public class ProjectService(
     {
         logger.LogInformation($"Started deleting project with Id : {id} from Service Layer");
         await projectRepository.DeleteAsync(id);
-        cacheService.RemoveCacheDataAsync<ProjectResponse>(id);
+        await cacheService.RemoveCacheDataAsync<ProjectResponse>(id);
         logger.LogInformation($"Successfully deleted project with Id : {id} from Service Layer");
     }
 }

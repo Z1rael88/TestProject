@@ -13,7 +13,7 @@ namespace Application.Services;
 public class TaskService(
     IProjectRepository projectRepository,
     ITaskRepository taskRepository,
-    IValidator<UpdateTaskRequest> taskValidator,
+    IValidator<BaseTaskRequest> taskValidator,
     IValidator<CreateTaskRequest> createTaskValidator,
     IMapper mapper,
     ILogger<TaskService> logger,
@@ -69,7 +69,7 @@ public class TaskService(
         return taskResponse;
     }
 
-    public async Task<TaskResponse> UpdateAsync(Guid id, UpdateTaskRequest updateTaskRequest)
+    public async Task<TaskResponse> UpdateAsync(Guid id, BaseTaskRequest updateTaskRequest)
     {
         logger.LogInformation($"Started updating task with Id : {id} from Service Layer");
         await taskValidator.ValidateAndThrowAsync(updateTaskRequest);

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace Application.Validators;
 
-public class TaskValidator : AbstractValidator<UpdateTaskRequest>
+public class TaskValidator : AbstractValidator<BaseTaskRequest>
 {
     public TaskValidator(IOptions<TaskValidationOptions> validationOptions)
     {

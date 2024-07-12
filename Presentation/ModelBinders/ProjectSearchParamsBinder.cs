@@ -7,10 +7,7 @@ public class ProjectSearchParamsModelBinder : IModelBinder
 {
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        if (bindingContext == null)
-        {
-            throw new ArgumentNullException(nameof(bindingContext));
-        }
+        ArgumentNullException.ThrowIfNull(bindingContext);
 
         var valueProvider = bindingContext.ValueProvider;
         var name = valueProvider.GetValue("name").FirstValue;

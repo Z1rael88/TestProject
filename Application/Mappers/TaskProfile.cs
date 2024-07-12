@@ -9,7 +9,7 @@ public class TaskProfile : Profile
     public TaskProfile()
     {
         CreateMap<TaskModel, TaskResponse>();
-        CreateMap<UpdateTaskRequest, TaskModel>();
+        CreateMap<BaseTaskRequest, TaskModel>();
         CreateMap<CreateTaskRequest, TaskModel>();
     }
 }

@@ -34,7 +34,7 @@ public class Program
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
-                        NamingStrategy = new CamelCaseNamingStrategy(),
+                        NamingStrategy = new CamelCaseNamingStrategy()
                     };
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
@@ -88,7 +88,7 @@ public class Program
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
         catch (Exception ex)
         {

@@ -43,7 +43,7 @@ namespace Presentation.Middlewares
 
                 var exceptionResponse = new ExceptionResponse
                 {
-                    Message = message,
+                    Message = message
                 };
 
                 await context.Response.WriteAsJsonAsync(exceptionResponse);

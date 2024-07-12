@@ -9,5 +9,5 @@ public interface ITaskService
     Task<TaskResponse> GetByIdAsync(Guid id);
     Task<TaskResponse> CreateAsync(CreateTaskRequest createTaskRequest);
     Task DeleteAsync(Guid id);
-    Task<TaskResponse> UpdateAsync(Guid id, UpdateTaskRequest updateTaskRequest);
+    Task<TaskResponse> UpdateAsync(Guid id, BaseTaskRequest updateTaskRequest);
 }

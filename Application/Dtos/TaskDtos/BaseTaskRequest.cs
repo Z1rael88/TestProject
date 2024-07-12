@@ -2,7 +2,7 @@ using Domain.Enums;
 
 namespace Application.Dtos.TaskDtos;
 
-public class UpdateTaskRequest
+public class BaseTaskRequest
 {
     public string Name { get; set; }
 

@@ -16,23 +16,8 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
 
         var allProjects = dbContext.Projects.AsQueryable();
 
-        if (!string.IsNullOrEmpty(projectSearchParams.Description))
-        {
-            var descriptionSpec = new ProjectByDescriptionSpecification(projectSearchParams.Description);
-            allProjects = ApplySpecification(descriptionSpec);
-        }
-
-        if (!string.IsNullOrEmpty(projectSearchParams.Name))
-        {
-            var nameSpec = new ProjectByNameSpecification(projectSearchParams.Name);
-            allProjects = ApplySpecification(nameSpec);
-        }
-
-        if (projectSearchParams.StartDate.HasValue)
-        {
-            var startDateSpec = new ProjectByStartDateSpecification(projectSearchParams.StartDate);
-            allProjects = ApplySpecification(startDateSpec);
-        }
+        allProjects = ApplySpecification(new ProjectSpecifications(projectSearchParams.Name,
+            projectSearchParams.Description, projectSearchParams.StartDate));
 
         logger.LogInformation("Successfully retrieved projects from database");
 
@@ -42,7 +27,7 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
     public async Task<ProjectModel> GetByIdAsync(Guid id)
     {
         logger.LogInformation("Started retrieving project from database");
-        var project = await ApplySpecification(new ProjectsByIdWithTasksSpecification(id)).FirstOrDefaultAsync();
+        var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.Id == id);
         if (project == null)
         {
             throw new NotFoundException($"Project with {id} not found");
@@ -56,16 +41,6 @@ public class ProjectRepository(IApplicationDbContext dbContext, ILogger<ProjectR
     {
         return SpecificationEvaluator.GetQuery(dbContext.Set<ProjectModel>(), specification);
     }
-
-    /*private IQueryable<ProjectModel> ApplySpecifications(IEnumerable<BaseSpecification<ProjectModel>> specifications)
-    {
-        foreach (var specification in specifications)
-        {
-            return SpecificationEvaluator
-        }
-
-        return query;
-    }*/
 
     public async Task<ProjectModel> CreateAsync(ProjectModel project)
     {

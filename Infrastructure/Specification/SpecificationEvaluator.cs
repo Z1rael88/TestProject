@@ -1,20 +1,21 @@
+using System.Linq;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Specification;
-
-public static class SpecificationEvaluator
+namespace Infrastructure.Specification
 {
-    public static IQueryable<TEntity> GetQuery<TEntity>(IQueryable<TEntity> inputQueryable,
-        BaseSpecification<TEntity> specification) where TEntity : BaseModel
+    public static class SpecificationEvaluator
     {
-        IQueryable<TEntity> queryable = inputQueryable;
+        public static IQueryable<TEntity> GetQuery<TEntity>(IQueryable<TEntity> inputQueryable,
+            BaseSpecification<TEntity> specification) where TEntity : BaseModel
+        {
+            var queryable = specification.Criteria.Aggregate(inputQueryable, (current, criteria) => current.Where(criteria));
 
-        if (specification.Criteria is not null)
-            queryable = queryable.Where(specification.Criteria);
-        
-        specification.Includes.Aggregate(queryable,
-            (current, includeExpression) => current.Include(includeExpression));
-        return queryable;
+            queryable = specification.Includes
+                .Aggregate(queryable,
+                    (current, includeExpression) => current.Include(includeExpression));
+
+            return queryable;
+        }
     }
 }

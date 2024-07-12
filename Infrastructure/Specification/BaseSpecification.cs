@@ -1,16 +1,25 @@
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Domain.Models;
 
-namespace Infrastructure.Specification;
-
-public abstract class BaseSpecification<TEntity>(Expression<Func<TEntity, bool>> criteria)
-    where TEntity : BaseModel
+namespace Infrastructure.Specification
 {
-    public Expression<Func<TEntity, bool>> Criteria { get; } = criteria;
-    public List<Expression<Func<TEntity, object>>> Includes { get; } = [];
-    
-    protected virtual void AddInclude(Expression<Func<TEntity, object>> includeExpression)
+    public abstract class BaseSpecification<TEntity> where TEntity : BaseModel
     {
-        Includes.Add(includeExpression);
+        protected List<Expression<Func<TEntity, bool>>> _criteria = new List<Expression<Func<TEntity, bool>>>();
+        protected List<Expression<Func<TEntity, object>>> _includes = new List<Expression<Func<TEntity, object>>>();
+
+        public IReadOnlyList<Expression<Func<TEntity, bool>>> Criteria => _criteria;
+        public IReadOnlyList<Expression<Func<TEntity, object>>> Includes => _includes;
+        protected void AddInclude(Expression<Func<TEntity, object>> includeExpression)
+        {
+            _includes.Add(includeExpression);
+        }
+
+        protected void AddCriteria(Expression<Func<TEntity, bool>> criteria)
+        {
+            _criteria.Add(criteria);
+        }
     }
 }

@@ -68,6 +68,13 @@ public class Program
             builder.Services.AddSwaggerGen();
             builder.Logging.ClearProviders();
             builder.Host.UseNLog();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    policyBuilder => policyBuilder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
 
             var app = builder.Build();
 
@@ -79,6 +86,7 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowAllOrigins");
             app.UseMiddleware<GlobalExceptionHandler>();
             app.UseRouting();
             app.UseHttpsRedirection();

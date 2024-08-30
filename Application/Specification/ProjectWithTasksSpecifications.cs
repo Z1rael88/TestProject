@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Domain.Extensions;
+using Application.Extensions;
 using Domain.Models;
 using Domain.SearchParams;
 using Microsoft.IdentityModel.Tokens;

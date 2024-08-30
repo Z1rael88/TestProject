@@ -1,11 +1,14 @@
 using System.Reflection;
+using ApiClient.Ioc;
 using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
+using Domain.Models;
 using Domain.ValidationOptions;
 using FluentValidation;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -24,6 +27,12 @@ public class Program
         try
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
+            builder.Services.AddApiClientService(options =>
+            {
+                options.BaseAddress =  builder.Configuration.GetValue<string>("BaseAddress");
+            });
+
             builder.Services.AddAuthorization();
             builder.Services.AddControllers(options =>
                 {
@@ -40,7 +49,7 @@ public class Program
                 });
             builder.Services.AddAutoMapper(Assembly.Load("Application"));
             builder.Services.AddEndpointsApiExplorer();
-            var configuration = builder.Configuration;
+
             builder.Services.Configure<ProjectValidationOptions>(configuration.GetSection("ProjectValidation"));
             builder.Services.Configure<TaskValidationOptions>(configuration.GetSection("TaskValidation"));
 
@@ -53,7 +62,7 @@ public class Program
                     "DefaultConnection");
                 options.SchemaName = "dbo";
                 options.TableName = "TestCache";
-                options.DefaultSlidingExpiration = TimeSpan.FromSeconds(30);
+                options.DefaultSlidingExpiration = TimeSpan.FromSeconds(10);
             });
             builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -68,6 +77,13 @@ public class Program
             builder.Services.AddSwaggerGen();
             builder.Logging.ClearProviders();
             builder.Host.UseNLog();
+
+            builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+
+            builder.Services.AddIdentityCore<UserModel>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddApiEndpoints();
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
@@ -91,7 +107,10 @@ public class Program
             app.UseRouting();
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapIdentityApi<UserModel>();
 
             app.MapControllers();
 

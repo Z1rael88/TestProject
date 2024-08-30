@@ -7,6 +7,7 @@ public interface IApplicationDbContext
 {
     DbSet<ProjectModel> Projects { get; set; }
     DbSet<TaskModel> Tasks { get; set; }
+    DbSet<UserModel> Users { get; set; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     DbSet<TEntity> GetDbSet<TEntity>() where TEntity : BaseModel;
 }

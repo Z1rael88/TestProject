@@ -73,6 +73,7 @@ public class ProjectService(
         var updatedProject = await projectRepository.UpdateAsync(project);
         var projectResponse = mapper.Map<ProjectResponse>(updatedProject);
         await cacheService.SetCacheDataAsync(id, projectResponse);
+        await cacheService.RemoveCacheDataAsync<IEnumerable<ProjectResponse>>(new ProjectSearchParams());
         logger.LogInformation(
             $"Successfully updated project with Id : {updatedProject.Id} from Service Layer");
         return projectResponse;

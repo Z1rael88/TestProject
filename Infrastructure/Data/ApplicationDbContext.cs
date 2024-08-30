@@ -15,6 +15,7 @@ public class ApplicationDbContext(
 {
     public DbSet<ProjectModel> Projects { get; set; }
     public DbSet<TaskModel> Tasks { get; set; }
+    public DbSet<UserModel> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
